@@ -34,6 +34,12 @@ namespace Ecommerce.Controllers
             return View(productRepository.GetProductByID(id));
         }
 
+        public IActionResult Details(int id)
+        {
+            ProductRepository productRepository = new ProductRepository();
+            return View(productRepository.GetProductByID(id));
+        }
+
         [HttpPost]
         public IActionResult Delete(Product p)
         {

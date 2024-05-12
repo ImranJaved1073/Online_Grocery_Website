@@ -5,14 +5,54 @@
     Layout = "_AdminLayout";
 }
 
+<style>
+    .card {
+        transition: all 0.3s ease-in-out;
+    }
+
+        .card:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: #f8f9fa;
+        }
+
+    .btn-primary {
+        transition: all 0.3s ease-in-out;
+        background-color: #088a08;
+        border-color: #088a08;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background-color: #0aad0a;
+            border-color: #0aad0a;
+        }
+
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    }
+
+    .input-group:hover .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+
+        .input-group:hover .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+</style>
+
 <body>
 
     <!-- main -->
-    <main class="main-content-wrapper">
+    <main class="main-wrapper">
         <!-- container -->
         <div class="container">
             <!-- row -->
-            <div class="row mb-8">
+            <div class="row mb-4">
                 <div class="col-md-12">
                     <div class="d-md-flex justify-content-between align-items-center">
                         <!-- page header -->
@@ -21,8 +61,8 @@
                             <!-- breacrumb -->
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb mb-0">
-                                    <li class="breadcrumb-item"><a href="#" class="text-inherit">Dashboard</a></li>
-                                    <li class="breadcrumb-item"><a href="#" class="text-inherit">Products</a></li>
+                                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Dashboard</a></li>
+                                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Products</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">Add New Product</li>
                                 </ol>
                             </nav>
@@ -38,18 +78,18 @@
             <form method="post" asp-action="Edit"  enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
-                <div class="col-lg-8 col-12">
+                <div class="col-lg-8">
                     <!-- card -->
-                    <div class="card mb-6 card-lg">
+                    <div class="card mb-4">
                         <!-- card body -->
-                        <div class="card-body p-6">
+                        <div class="card-body p-4">
                             <h4 class="mb-4 h5">Product Information</h4>
                             <div class="row">
                                 <!-- input -->
-                                <div class="form-group mb-3 col-lg-6">
-                                    <label asp-for="Name" class="form-label">Title</label>
+                                <div class="mb-3 col-lg-6">
+                                    <label asp-for="Name" class="form-label">Name</label>
                                     <input asp-for="Name" type="text" class="form-control" placeholder="Product Name" required />
-                                    <div class="invalid-feedback">Please enter email.</div>
+                                    <div class="invalid-feedback">Please enter a title.</div>
                                 </div>
                                 <!-- input -->
                                 <div class="mb-3 col-lg-6">
@@ -62,43 +102,48 @@
                                     </select>
                                 </div>
                                 <!-- input -->
-                                <div class="mb-3 col-lg-6">
-                                     <label asp-for="Weight" class="form-label">Weight</label>
-                                    <input asp-for="Weight" type="text" class="form-control" placeholder="Weight" required />
-                                </div>
-                                <!-- input -->
-                                <div class="mb-3 col-lg-6">
-                                    <label asp-for="Quantity" class="form-label">Quantity</label>
-                                    <input asp-for="Quantity" type="text" class="form-control" placeholder="Quantity" required />
-                                    <span asp-validation-for="Quantity" class="text-danger"></span>
-                                </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <label asp-for="Category" class="form-label">Product Size</label>
+                                        <select asp-for="Category" class="form-select">
+                                            <option selected disabled>Select Product Size</option>
+                                            <option value="Extra Small">Extra Small</option>
+                                            <option value="Small">Small</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="Large">Large</option>
+                                            <option value="Extra Large">Extra Large</option>
+                                            <option value="Extra Extra Large">Extra Extra Large</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <label asp-for="Weight" class="form-label">Color</label>
+                                        <input asp-for="Weight" type="text" class="form-control" placeholder="Color" required>
+                                    </div>
+                                    <!-- input -->
+                                    <div class="col-lg-4 mb-3">
+                                        <label asp-for="Quantity" class="form-label">Quantity</label>
+                                        <input asp-for="Quantity" type="text" class="form-control" placeholder="Quantity" required>
+                                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                                    </div>
                                 <div>
-                                    <div class="mb-3 col-lg-12 mt-5">
-                                        <!-- heading -->
+                                    <div class="mb-3 col-lg-12 mt-4">
                                         <label asp-for="Picture" class="mb-3 h5">Product Images</label>
-
-                                        <!-- input -->
-                                        <div class="input-group mb-3">
-                                                <input asp-for="Picture" class="form-control form-control-lg" id="formFileLg" type="file" aria-describedby="button-addon2">
-                                                <button class="btn btn-success" type="submit" id="button-addon2">Upload</button>
-                                        </div>
-
+                                        <input asp-for="Picture" class="form-control form-control-lg" id="formFileLg" type="file">
                                     </div>
                                 </div>
                                 <!-- input -->
-                                <div class="mb-3 col-lg-12 mt-5">
+                                <div class="mb-2 col-lg-12 mt-5">
                                     <label asp-for="ProductDescription" class="mb-3 h5">Product Descriptions</label>
-                                    <textarea asp-for="ProductDescription" class="form-control" cols="6"></textarea>
+                                    <textarea asp-for="ProductDescription" class="form-control" rows="5"></textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-12">
+                <div class="col-lg-4">
                     <!-- card -->
-                    <div class="card mb-6 card-lg">
+                    <div class="card mb-4">
                         <!-- card body -->
-                        <div class="card-body p-6">
+                        <div class="card-body p-4">
                             <!-- input -->
                             @* <div class="form-check form-switch mb-4">
                                 <input asp-for="InStock" class="form-check-input" type="checkbox" role="switch" id="flexSwitchStock" checked />
@@ -108,18 +153,18 @@
                             <div>
                                 <div class="mb-3">
                                     <label asp-for="ProductCode" class="form-label">Product Code</label>
-                                    <input asp-for="ProductCode" type="text" class="form-control" placeholder="Enter Product Title" />
+                                    <input asp-for="ProductCode" type="text" class="form-control" placeholder="Enter Product Code" />
                                 </div>
                                 <!-- input -->
                                 <div class="mb-3">
                                     <label asp-for="InStock" class="form-label" id="productSKU">Status</label>
-                                    <br />
-                                    <div class="form-check form-check-inline">
+                                    
+                                    <div class="form-check">
                                             <input asp-for="InStock" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked />
                                             <label asp-for="InStock" class="form-check-label" for="inlineRadio1">Active</label>
                                     </div>
                                     <!-- input -->
-                                    <div class="form-check form-check-inline">
+                                    <div class="form-check">
                                             <input asp-for="InStock" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" />
                                             <label asp-for="InStock" class="form-check-label" for="inlineRadio2">Disabled</label>
                                     </div>
@@ -129,22 +174,22 @@
                         </div>
                     </div>
                     <!-- card -->
-                    <div class="card mb-6 card-lg">
-                        <!-- card body -->
-                        <div class="card-body p-6">
-                            <h4 class="mb-4 h5">Product Price</h4>
-                            <!-- input -->
-                            <div class="mb-3">
-                                <label asp-for="RegularPrice" class="form-label">Regular Price</label>
-                                    <input asp-for="RegularPrice" type="text" class="form-control" placeholder="$0.00" />
-                            </div>
-                            <!-- input -->
-                            <div class="mb-3">
+                        <div class="card mb-4">
+                            <!-- card body -->
+                            <div class="card-body p-4">
+                                <h4 class="mb-4 h5">Product Price</h4>
+                                <!-- input -->
+                                <div class="mb-3">
+                                    <label asp-for="RegularPrice" class="form-label">Regular Price</label>
+                                    <input asp-for="RegularPrice" type="text" class="form-control" placeholder="Rs.0.00">
+                                </div>
+                                <!-- input -->
+                                <div class="mb-3">
                                     <label asp-for="SalePrice" class="form-label">Sale Price</label>
-                                    <input asp-for="SalePrice" type="text" class="form-control" placeholder="$0.00" />
+                                    <input asp-for="SalePrice" type="text" class="form-control" placeholder="Rs.0.00">
+                                </div>
                             </div>
                         </div>
-                    </div>
                     <!-- button -->
 
                     <div class="d-grid">
@@ -156,7 +201,7 @@
         </div>
     </main>
 
-    <!-- Libs JS -->
+    @* <!-- Libs JS -->
     <!-- <script src="~/libs/jquery/dist/jquery.min.js"></script> -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/simplebar/dist/simplebar.min.js"></script>
@@ -170,6 +215,6 @@
     <script src="~/js/vendors/dropzone.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-
+ *@
 </body>
 
