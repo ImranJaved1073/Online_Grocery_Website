@@ -56,8 +56,8 @@
 <body>
 
     <!-- main -->
-    <main class="main-wrapper">
-        <div class="container-fluid">
+    
+        <main class="container">
             <div class="row mb-8">
                 <div class="col-md-12">
                     <!-- page header -->
@@ -88,10 +88,16 @@
                             <div class="row justify-content-between">
                                 <!-- form -->
                                 <div class="col-lg-4 col-md-6 col-12 mb-2 mb-lg-0">
-                                    <form class="d-flex" role="search">
-                                        <input class="form-control" type="search" placeholder="Search Products" aria-label="Search" />
-                                    </form>
-                                </div>
+                                @using (Html.BeginForm("ProductList", "Product", FormMethod.Get, new { @class = "d-flex" }))
+                                {
+                                    <div class="input-group">
+                                        @Html.TextBox("search", null, new { @class = "form-control", placeholder = "Search Products" })
+                                        <button type="submit" class="btn btn-primary">Search</button>
+                                    </div>
+                                }
+
+
+                            </div>
                                 <!-- select option -->
                                 <div class="col-lg-2 col-md-4 col-12">
                                     <select class="form-select">
@@ -126,7 +132,14 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var product in Model)
+                                        @if(Model.Count() == 0)
+                                    {
+                                        <tr>
+                                            <td colspan="8" class="text-center">No products found!!</td>
+                                        </tr>
+                                    }
+                                    else{
+                                    foreach (var product in Model)
                                         {
                                             <tr class="text-center">
                                                 <td>
@@ -167,6 +180,7 @@
                                                 </td>
                                             </tr>
                                         }
+                                        }
                                     </tbody>
                                 </table>
                             </div>
@@ -187,8 +201,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    
 
 
     <!-- Libs JS -->

@@ -22,7 +22,7 @@ namespace Ecommerce.Models
                         command.Parameters.AddWithValue("@ProductCode", p.ProductCode);
                         command.Parameters.AddWithValue("@Name", p.Name);
                         command.Parameters.AddWithValue("@Category", p.Category);
-                        command.Parameters.AddWithValue("@Weight", p.Weight);
+                        command.Parameters.AddWithValue("@Weight", p.Size);
                         command.Parameters.AddWithValue("@Quantity", p.Quantity);
                         command.Parameters.AddWithValue("@RegularPrice", p.RegularPrice);
                         command.Parameters.AddWithValue("@SalePrice", p.SalePrice);
@@ -67,7 +67,7 @@ namespace Ecommerce.Models
                                     ProductCode = reader["product_code"].ToString(),
                                     Name = reader["name"].ToString(),
                                     Category = reader["category"].ToString(),
-                                    Weight = reader["waight"].ToString(),
+                                    Size = reader["waight"].ToString(),
                                     Quantity = Convert.ToInt32(reader["quantity"]),
                                     RegularPrice = Convert.ToDecimal(reader["regular_price"]),
                                     SalePrice = Convert.ToDecimal(reader["sale_price"]),
@@ -94,7 +94,7 @@ namespace Ecommerce.Models
 
         public Product GetProductByID(int id)
         {
-            Product product = null;
+            Product product = new();
 
             try
             {
@@ -117,7 +117,7 @@ namespace Ecommerce.Models
                                     ProductCode = reader["product_code"].ToString(),
                                     Name = reader["name"].ToString(),
                                     Category = reader["category"].ToString(),
-                                    Weight = reader["waight"].ToString(),
+                                    Size = reader["waight"].ToString(),
                                     Quantity = Convert.ToInt32(reader["quantity"]),
                                     RegularPrice = Convert.ToDecimal(reader["regular_price"]),
                                     SalePrice = Convert.ToDecimal(reader["sale_price"]),
@@ -191,7 +191,7 @@ namespace Ecommerce.Models
                         command.Parameters.AddWithValue("@ProductCode", p.ProductCode);
                         command.Parameters.AddWithValue("@Name", p.Name);
                         command.Parameters.AddWithValue("@Category", p.Category);
-                        command.Parameters.AddWithValue("@Weight", p.Weight);
+                        command.Parameters.AddWithValue("@Weight", p.Size);
                         command.Parameters.AddWithValue("@Quantity", p.Quantity);
                         command.Parameters.AddWithValue("@RegularPrice", p.RegularPrice);
                         command.Parameters.AddWithValue("@SalePrice", p.SalePrice);
@@ -210,6 +210,57 @@ namespace Ecommerce.Models
                 // Handle the exception (e.g., log) or rethrow
                 throw;
             }
+        }
+
+        public List<Product> SearchProducts(string search)
+        {
+            List<Product> products = new List<Product>();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connString))
+                {
+                    connection.Open();
+
+                    string query = "SELECT * FROM Product WHERE name LIKE @search OR category LIKE @search";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@search", "%" + search + "%");
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Product product = new Product
+                                {
+                                    Id = Convert.ToInt32(reader["Id"]),
+                                    ProductCode = reader["product_code"].ToString(),
+                                    Name = reader["name"].ToString(),
+                                    Category = reader["category"].ToString(),
+                                    Size = reader["waight"].ToString(),
+                                    Quantity = Convert.ToInt32(reader["quantity"]),
+                                    RegularPrice = Convert.ToDecimal(reader["regular_price"]),
+                                    SalePrice = Convert.ToDecimal(reader["sale_price"]),
+                                    ProductDescription = reader["Product_desc"].ToString(),
+                                    InStock = Convert.ToBoolean(reader["in_stock"]),
+                                    ImageUrl = reader["img_url"] != DBNull.Value ? reader["img_url"].ToString() : null,
+                                    ImageName = reader["ImageName"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
+                                };
+
+                                products.Add(product);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return products;
         }
     }
 }

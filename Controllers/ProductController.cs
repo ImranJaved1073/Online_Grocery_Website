@@ -1,6 +1,7 @@
 ﻿using Ecommerce.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System;
 using static NuGet.Packaging.PackagingConstants;
@@ -16,10 +17,18 @@ namespace Ecommerce.Controllers
             _env = env;
         }
 
-        public IActionResult ProductList()
+        public IActionResult ProductList(string search)
         {
             ProductRepository productsRepository = new ProductRepository();
-            List<Product> products = productsRepository.GetAllProducts();
+            List<Product> products = new();
+            if (!string.IsNullOrEmpty(search))
+            {
+                products = productsRepository.SearchProducts(search);
+            }
+            else
+            {
+                products = productsRepository.GetAllProducts();
+            }
             return View(products);
         }
 
@@ -63,6 +72,15 @@ namespace Ecommerce.Controllers
             productRepository.Edit(p);
             return RedirectToAction("ProductList", "Product");
         }
+
+        //[HttpPost]
+        //public IActionResult Search(string search)
+        //{
+        //    ProductRepository productsRepository = new ProductRepository();
+        //    List<Product> products = productsRepository.GetSearchProducts(search);
+        //    return View("ProductList", products);
+
+        //}
 
         public string GetPath(IFormFile picture)
         {

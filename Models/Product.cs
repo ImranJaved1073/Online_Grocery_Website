@@ -18,8 +18,9 @@ namespace Ecommerce.Models
 
         public string Category { get; set; }
 
+        public string Color {  get; set; }
         
-        public string Weight { get; set; }
+        public string Size { get; set; }
 
         [Required]
         public int Quantity { get; set; }
@@ -36,7 +37,7 @@ namespace Ecommerce.Models
         public bool InStock { get; set; }
 
         [NotMapped]
-        public Image Picture { get; set; }
+        public IFormFile Picture { get; set; }
 
         public string ImageUrl { get; set; }
         public string ImageName { get; set; }
