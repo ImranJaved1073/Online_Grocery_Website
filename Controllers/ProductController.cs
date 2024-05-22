@@ -23,11 +23,11 @@ namespace Ecommerce.Controllers
             List<Product> products = new();
             if (!string.IsNullOrEmpty(search))
             {
-                products = productsRepository.SearchProducts(search);
+                products = productsRepository.Search(search);
             }
             else
             {
-                products = productsRepository.GetAllProducts();
+                products = productsRepository.Get();
             }
             return View(products);
         }
@@ -40,13 +40,13 @@ namespace Ecommerce.Controllers
         public IActionResult Delete(int id)
         {
             ProductRepository productRepository = new ProductRepository();
-            return View(productRepository.GetProductByID(id));
+            return View(productRepository.Get(id));
         }
 
         public IActionResult Details(int id)
         {
             ProductRepository productRepository = new ProductRepository();
-            return View(productRepository.GetProductByID(id));
+            return View(productRepository.Get(id));
         }
 
         [HttpPost]
@@ -60,16 +60,16 @@ namespace Ecommerce.Controllers
         public IActionResult Edit(int id)
         {
             ProductRepository productRepository = new ProductRepository();
-            return View(productRepository.GetProductByID(id));
+            return View(productRepository.Get(id));
         }
 
         [HttpPost]
         public IActionResult Edit(Product p, IFormFile picture)
         {
-            p.ImageUrl = GetPath(picture);
-            p.ImageName = picture.FileName;
+            //p.ImageUrl = GetPath(picture);
+            //p.ImageName = picture.FileName;
             ProductRepository productRepository = new ProductRepository();
-            productRepository.Edit(p);
+            productRepository.Update(p);
             return RedirectToAction("ProductList", "Product");
         }
 
@@ -82,42 +82,55 @@ namespace Ecommerce.Controllers
 
         //}
 
-        public string GetPath(IFormFile picture)
+        private string GetPath(IFormFile picture)
         {
             string wwwrootPath = _env.WebRootPath;
-            string path = Path.Combine(Path.Combine(wwwrootPath, "images"), "products");
+            string path = Path.Combine(wwwrootPath, "images", "products");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
+            string UniqueFileName = Guid.NewGuid().ToString() + "_" + picture.FileName;
             if (picture != null && picture.Length > 0)
             {
-                path = Path.Combine(path, picture.FileName);
+                path = Path.Combine(path, UniqueFileName);
 
                 using (var fileStream = new FileStream(path, FileMode.Create))
                 {
                     picture.CopyTo(fileStream);
                 }
             }
-            return path;
+            return Path.Combine("images", "products", UniqueFileName);
         }
 
         [HttpPost]
-        public IActionResult AddProduct(Product p, IFormFile picture)
+        public IActionResult AddProduct(ProductVariantViewModel model, IFormFile picture)
         {
-            try
+            if(ModelState.IsValid ) 
             {
-                p.CreatedAt = DateTime.Now;
-                p.ImageUrl = GetPath(picture);
-                p.ImageName = picture.FileName;
-
+                Product product = model.Product ?? new Product();
+                product.CreatedAt = DateTime.Now;
                 ProductRepository productRepository = new ProductRepository();
-                productRepository.Add(p);
+                productRepository.Add(product);
 
-                return RedirectToAction("ProductList", "Product");
+                ProductVariant pV = model.Variant ?? new ProductVariant();
+                pV.ProductID = product.Id;
+                pV.CreatedAt = DateTime.Now;
+                pV.ImagePath = GetPath(picture);
+                IRepository<ProductVariant> pVRepository = new GenericRepository<ProductVariant>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+                pVRepository.Add(pV);
             }
-            catch (Exception ex)
-            {
-                return View("Error");
-            }
+
+            return RedirectToAction("ProductList", "Product");
+
+            
+
+            //p.CreatedAt = DateTime.Now;
+            //p.ImageUrl = GetPath(picture);
+            //p.ImageName = picture.FileName;
+
+            //ProductRepository productRepository = new ProductRepository();
+            //productRepository.Add(p);
+
+            //return RedirectToAction("ProductList", "Product");
         }
     }
 }

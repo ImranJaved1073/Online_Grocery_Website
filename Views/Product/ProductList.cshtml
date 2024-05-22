@@ -1,4 +1,4 @@
-﻿
+﻿@* 
 @{
     Layout = "_AdminLayout";
 }
@@ -128,6 +128,7 @@
                                             <th class="text-center">Status</th>
                                             <th class="text-center">Price</th>
                                             <th class="text-center">Create at</th>
+                                            <th class="text-center">Updated at</th>
                                             <th class="text-center">Action</th>
                                         </tr>
                                     </thead>
@@ -149,7 +150,7 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <img src="~/images/products/@product.ImageName" alt="" class="icon-shape icon-md" />
+                                                    <img src="~/@product.ImageUrl" alt="" class="icon-shape icon-md" />
                                                 </td>
                                                 <td><a href="#" class="text-reset">@product.Name</a></td>
                                                 <td>@product.Category</td>
@@ -165,6 +166,7 @@
                                                 </td>
                                                 <td>@product.SalePrice</td>
                                                 <td>@product.CreatedAt.ToString("dd MMM yyyy")</td>
+                                                <td>@product.UpdatedAt.ToString("dd MMM yyyy")</td>
                                                 <td>
                                                     <div class="btn-group">
                                                         <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-sm btn-outline-warning">
@@ -212,4 +214,4 @@
 
     <!-- Theme JS -->
     <script src="~/js/theme.min.js"></script>
-</body>
+</body> *@

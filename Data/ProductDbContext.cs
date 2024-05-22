@@ -10,5 +10,6 @@ namespace Ecommerce.Data
 
         }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Ecommerce.Models.Category> Category { get; set; } = default!;
     }
 }
