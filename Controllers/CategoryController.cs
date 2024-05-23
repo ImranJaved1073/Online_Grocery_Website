@@ -12,7 +12,7 @@ namespace Ecommerce.Controllers
         {
             _env = env;
         }
-        public IActionResult List(string search)
+        public IActionResult List(string search,int pg=1)
         {
             CategoryRepository categoryRepository = new CategoryRepository();
             List<Category> categories = new();
@@ -24,7 +24,10 @@ namespace Ecommerce.Controllers
             {
                 categories = categoryRepository.GetParents();
             }
-            return View(categories);
+            const int pageSize = 5;
+            if (pg < 1)
+                pg = 1;
+            return View(PaginatedList<Category>.Create(categories, pg, pageSize));
         }
 
         public IActionResult Create()

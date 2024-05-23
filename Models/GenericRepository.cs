@@ -147,7 +147,7 @@ namespace Ecommerce.Models
             }
         }
 
-        public List<TEntity> Search(string search)
+        virtual public List<TEntity> Search(string search)
         {
             List<TEntity> entities = new List<TEntity>();
             var entityType = typeof(TEntity);

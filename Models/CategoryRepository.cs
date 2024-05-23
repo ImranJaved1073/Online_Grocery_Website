@@ -71,6 +71,98 @@ namespace Ecommerce.Models
             }
         }
 
+        public List<Category> GetSubCategories(int parentCategoryId)
+        {
+            var query = @"SELECT 
+                    c.Id,
+                    c.CategoryName,
+                    c.CategoryDescription,
+                    c.ImgPath,
+                    c.CreatedOn,
+                    c.ParentCategoryID,
+                    pc.CategoryName AS ParentCategoryName
+                FROM 
+                    Category c
+                LEFT JOIN 
+                    Category pc ON c.ParentCategoryID = pc.Id
+                WHERE 
+                    c.ParentCategoryID = @ParentCategoryID";
+
+            var subCategories = new List<Category>();
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (var cmd = new SqlCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@ParentCategoryID", parentCategoryId);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Category c = new Category
+                            {
+                                Id = reader.GetInt32(0),
+                                CategoryName = reader.GetString(1),
+                                CategoryDescription = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                ImgPath = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                CreatedOn = reader.GetDateTime(4),
+                                ParentCategoryID = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
+                                ParentCategoryName = reader.IsDBNull(6) ? null : reader.GetString(6)
+                            };
+                            subCategories.Add(c);
+                        }
+                    }
+                }
+            }
+
+            return subCategories;
+        }
+
+        public List<Category> GetNonParentCategories()
+        {
+            var query = @"SELECT 
+                    c.Id,
+                    c.CategoryName,
+                    c.CategoryDescription,
+                    c.ImgPath,
+                    c.CreatedOn,
+                    c.ParentCategoryID
+                FROM 
+                    Category c
+                WHERE 
+                    c.Id NOT IN (SELECT DISTINCT ParentCategoryID FROM Category WHERE ParentCategoryID IS NOT NULL)";
+
+            var nonParentCategories = new List<Category>();
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (var cmd = new SqlCommand(query, connection))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Category c = new Category
+                            {
+                                Id = reader.GetInt32(0),
+                                CategoryName = reader.GetString(1),
+                                CategoryDescription = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                ImgPath = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                CreatedOn = reader.GetDateTime(4),
+                                ParentCategoryID = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
+                            };
+                            nonParentCategories.Add(c);
+                        }
+                    }
+                }
+            }
+
+            return nonParentCategories;
+        }
+
+
         public new Category Get(int id)
         {
             var query = @"

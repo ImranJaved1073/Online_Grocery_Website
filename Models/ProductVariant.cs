@@ -6,15 +6,15 @@ namespace Ecommerce.Models
     public class ProductVariant
     {
         [Key]
-        public int VariantID { get; set; }
+        public int Id { get; set; }
 
         [ForeignKey("Product")]
         public int ProductID { get; set; }
 
         public string? ProductCode { get; set; }
 
-        [ForeignKey("Size")]
-        public int SizeID { get; set; }
+        //[ForeignKey("Size")]
+        //public int SizeID { get; set; }
 
         public string? Size {  get; set; }
 
@@ -22,10 +22,7 @@ namespace Ecommerce.Models
 
         [Required]
         [Column(TypeName = "Nvarchar(max)")]
-        public string? Description { get; set; }
-
-        [Required]
-        public string? Details { get; set; }
+        public string? VariantDescription { get; set; }
 
         [Required]
         public decimal SalePrice { get; set; }
@@ -42,6 +39,9 @@ namespace Ecommerce.Models
 
         [Required]
         public int Quantity { get; set; }
+
+        [NotMapped]
+        public IFormFile? Picture { get; set; }
 
         public string? ImagePath { get; set; }
 

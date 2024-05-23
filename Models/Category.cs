@@ -27,6 +27,7 @@ namespace Ecommerce.Models
         [Required]
         public DateTime CreatedOn { get; set; } = DateTime.Now;
 
+        [NotMapped]
         public string? ParentCategoryName { get; set; }
     }
 }

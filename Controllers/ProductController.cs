@@ -1,6 +1,7 @@
 ﻿using Ecommerce.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -34,7 +35,17 @@ namespace Ecommerce.Controllers
 
         public IActionResult AddProduct()
         {
-            return View();
+            CategoryRepository categoryRepository = new CategoryRepository();
+            List<Category> categories = categoryRepository.GetNonParentCategories().ToList();
+            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            List<Brand> brands = brandRepository.Get().ToList();
+
+            AddProductViewModel addProduct = new AddProductViewModel();
+            addProduct.Categories = new SelectList(categories, "Id", "CategoryName");
+            addProduct.Brands = new SelectList(brands, "Id", "BrandName");
+
+            return View(addProduct);
+
         }
 
         public IActionResult Delete(int id)
@@ -102,19 +113,29 @@ namespace Ecommerce.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddProduct(ProductVariantViewModel model, IFormFile picture)
+        public IActionResult AddProduct(AddProductViewModel model,IFormFile picture)
         {
-            if(ModelState.IsValid ) 
+            if(!ModelState.IsValid) 
             {
-                Product product = model.Product ?? new Product();
-                product.CreatedAt = DateTime.Now;
-                ProductRepository productRepository = new ProductRepository();
-                productRepository.Add(product);
+                Product p = new();
+                //check if product exists
+                if (model.Product != null)
+                {
+                    ProductRepository pRepository = new ProductRepository();
+                    p = pRepository.GetProduct(model.Product.Name,model.Product.CategoryID, model.Product.BrandID);
+                    if (p.Id == 0)
+                    {
+                        p = model.Product;
+                        p.CreatedAt = DateTime.Now;
+                        ProductRepository productRepository = new ProductRepository();
+                        productRepository.Add(p);
 
-                ProductVariant pV = model.Variant ?? new ProductVariant();
-                pV.ProductID = product.Id;
+                    }
+                }
+                ProductVariant pV = model.Variant;
+                pV.ProductID = p.Id;
                 pV.CreatedAt = DateTime.Now;
-                pV.ImagePath = GetPath(picture);
+                pV.ImagePath = GetPath(pV.Picture);
                 IRepository<ProductVariant> pVRepository = new GenericRepository<ProductVariant>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
                 pVRepository.Add(pV);
             }

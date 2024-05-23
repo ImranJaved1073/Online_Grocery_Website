@@ -1,9 +1,9 @@
-﻿@* 
+﻿
 @{
     Layout = "_AdminLayout";
 }
 
-@model List<Product>
+@model List<AddProductViewModel>
 
 <link href="~lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet">
 <link href="~lib/feather-webfont/dist/feather-icons.css" rel="stylesheet">
@@ -125,6 +125,7 @@
                                             <th class="text-center">Image</th>
                                             <th class="text-center">Product Name</th>
                                             <th class="text-center">Category</th>
+                                            <th class="text-center">Brand</th>
                                             <th class="text-center">Status</th>
                                             <th class="text-center">Price</th>
                                             <th class="text-center">Create at</th>
@@ -150,12 +151,13 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <img src="~/@product.ImageUrl" alt="" class="icon-shape icon-md" />
+                                                    <img src="~/@product.Variant.ImagePath" alt="" class="icon-shape icon-md" />
                                                 </td>
-                                                <td><a href="#" class="text-reset">@product.Name</a></td>
-                                                <td>@product.Category</td>
+                                                <td><a href="#" class="text-reset">@product.Product.Name</a></td>
+                                                <td>@product.Product.CategoryName</td>
+                                                <td>@product.Product.BrandName</td>
                                                 <td>
-                                                    @if (product.InStock)
+                                                    @if (product.Variant.InStock)
                                                     {
                                                         <span class="badge bg-success">In Stock</span>
                                                     }
@@ -164,18 +166,18 @@
                                                         <span class="badge bg-danger">Out of Stock</span>
                                                     }
                                                 </td>
-                                                <td>@product.SalePrice</td>
-                                                <td>@product.CreatedAt.ToString("dd MMM yyyy")</td>
-                                                <td>@product.UpdatedAt.ToString("dd MMM yyyy")</td>
+                                                <td>@product.Variant.SalePrice</td>
+                                                <td>@product.Variant.CreatedAt.ToString("dd MMM yyyy")</td>
+                                                <td>@product.Variant.UpdatedAt.ToString("dd MMM yyyy")</td>
                                                 <td>
                                                     <div class="btn-group">
-                                                        <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-sm btn-outline-warning">
+                                                        <a asp-action="Details" asp-route-id="@product.Variant.Id" class="btn btn-sm btn-outline-warning">
                                                             <i class="bi bi-info-circle"></i> Details
                                                         </a>
-                                                        <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-outline-primary">
+                                                        <a asp-action="Edit" asp-route-id="@product.Variant.Id" class="btn btn-sm btn-outline-primary">
                                                             <i class="bi bi-pencil-square"></i> Edit
                                                         </a>
-                                                        <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-sm btn-outline-danger">
+                                                        <a asp-action="Delete" asp-route-id="@product.Variant.Id" class="btn btn-sm btn-outline-danger">
                                                             <i class="bi bi-trash"></i> Delete
                                                         </a>
                                                     </div>
@@ -214,4 +216,4 @@
 
     <!-- Theme JS -->
     <script src="~/js/theme.min.js"></script>
-</body> *@
+</body>
