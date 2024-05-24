@@ -76,6 +76,13 @@
                     </div>
                 </div>
             </div>
+            @if (ViewBag.Alert != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <p>@ViewBag.Alert</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
             <form method="post" action="/Product/AddProduct" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">

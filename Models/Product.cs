@@ -13,7 +13,7 @@ namespace Ecommerce.Models
 
         [Required]
         [Column(TypeName = "Nvarchar(100)")]
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         [ForeignKey("Category")]
         public int CategoryID { get; set; }
@@ -23,16 +23,16 @@ namespace Ecommerce.Models
 
         [Required]
         [Column(TypeName = "Nvarchar(max)")]
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [NotMapped]
-        public string?  CategoryName { get; set; }
+        public string  CategoryName { get; set; }
 
         [NotMapped]
-        public string? BrandName { get; set; }
+        public string BrandName { get; set; }
     }
 
 }

@@ -12,22 +12,35 @@ namespace Ecommerce.Controllers
         {
             _env = env;
         }
-        public IActionResult List(string search,int pg=1)
+        public IActionResult List(string search,int pageNumber)
         {
             CategoryRepository categoryRepository = new CategoryRepository();
             List<Category> categories = new();
             if (!string.IsNullOrEmpty(search))
             {
-                categories = categoryRepository.Search(search);
+                categories = categoryRepository.Search(search).ToList();
             }
             else
             {
-                categories = categoryRepository.GetParents();
+                categories = categoryRepository.GetParents().ToList();
             }
             const int pageSize = 5;
-            if (pg < 1)
-                pg = 1;
-            return View(PaginatedList<Category>.Create(categories, pg, pageSize));
+            //int excludeRecords = (pageSize * pageNumer) - pageSize;
+            //var totalRecords = categories.Count;
+            //var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+            //categories = categories.Skip(excludeRecords).Take(pageSize).ToList();
+            //ViewBag.TotalPages = totalPages;
+            //ViewBag.PageNumber = pageNumer;
+            //return View(categories);
+
+            var rescCount = categories.Count();
+            var totalPages = (int)Math.Ceiling((double)rescCount / pageSize);
+            pageNumber = totalPages;
+            var pager = new PaginatedList(pageNumber,totalPages, pageSize, rescCount);
+            var data = categories.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            ViewBag.Pager = pager;
+            return View(data);
+
         }
 
         public IActionResult Create()

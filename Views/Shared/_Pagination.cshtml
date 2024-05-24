@@ -1,18 +1,28 @@
-﻿@model PaginatedList<Category>
+﻿@model PaginatedList
 
-<nav class="mt-2 mt-md-0">
-    <ul class="pagination mb-0">
-        <li class="page-item @(Model.HasPreviousPage ? "":"disabled")">
-            <a class="page-link" asp-route-pageNumer="@(Model.PageIndex-1)">Previous</a>
-        </li>
-        @for (int i = 1; i <= Model.TotalPages; i++)
-        {
-            <li class="page-item @(Model.PageIndex == i ? "active" : "")">
-                <a class="page-link" asp-route-pageNumer="@i">@i</a>
+<div class="bg-tertiary-subtle border rounded-bottom d-md-flex justify-content-between align-items-center px-6 py-6">
+    @if(Model.TotalItems > 0)
+    {
+        <span>Showing @Model.FirstItemIndex to @Model.LastItemIndex of @Model.TotalItems entries</span>
+    }
+    else
+    {
+        <span>No entries found</span>
+    }
+    <nav class="mt-2 mt-md-0">
+        <ul class="pagination mb-0">
+            <li class="page-item @(Model.HasPreviousPage ? "":"disabled")">
+                <a class="page-link" asp-route-pageNumber="@(Model.PageIndex-1)">Previous</a>
             </li>
-        }
-        <li class="page-item @(Model.HasNextPage ? "":"disabled")">
-            <a class="page-link" asp-route-pageNumer="@(Model.PageIndex+1)">Next</a>
-        </li>
-    </ul>
-</nav>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.PageIndex == i ? "active" : "")">
+                    <a class="page-link" asp-route-pageNumber="@i">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.HasNextPage ? "":"disabled")">
+                <a class="page-link" asp-route-pageNumber="@(Model.PageIndex+1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>

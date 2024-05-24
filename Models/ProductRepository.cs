@@ -10,7 +10,7 @@ namespace Ecommerce.Models
         {
         }
 
-        public List<Product> Search(string search)
+        public override List<Product> Search(string search)
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
@@ -54,7 +54,7 @@ namespace Ecommerce.Models
                         product.Name = reader.GetString(1);
                         product.CategoryID = reader.GetInt32(2);
                         product.BrandID = reader.GetInt32(3);
-                        product.Description = reader.IsDBNull(4) ? null : reader.GetString(4);
+                        product.Description = reader.IsDBNull(4) ? DBNull.Value.ToString() : reader.GetString(4);
                         product.CreatedAt = reader.GetDateTime(5);
                         return product;
                     }

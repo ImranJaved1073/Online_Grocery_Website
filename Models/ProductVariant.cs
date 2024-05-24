@@ -11,18 +11,18 @@ namespace Ecommerce.Models
         [ForeignKey("Product")]
         public int ProductID { get; set; }
 
-        public string? ProductCode { get; set; }
+        public string ProductCode { get; set; }
 
         //[ForeignKey("Size")]
         //public int SizeID { get; set; }
 
-        public string? Size {  get; set; }
+        public string Size {  get; set; }
 
-        public string? Color { get; set; }
+        public string Color { get; set; }
 
         [Required]
         [Column(TypeName = "Nvarchar(max)")]
-        public string? VariantDescription { get; set; }
+        public string VariantDescription { get; set; }
 
         [Required]
         public decimal SalePrice { get; set; }
@@ -41,9 +41,9 @@ namespace Ecommerce.Models
         public int Quantity { get; set; }
 
         [NotMapped]
-        public IFormFile? Picture { get; set; }
+        public IFormFile Picture { get; set; }
 
-        public string? ImagePath { get; set; }
+        public string ImagePath { get; set; }
 
     }
 }

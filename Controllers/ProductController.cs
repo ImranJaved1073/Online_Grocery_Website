@@ -18,19 +18,55 @@ namespace Ecommerce.Controllers
             _env = env;
         }
 
-        public IActionResult ProductList(string search)
+        public IActionResult ProductList(string search,int pageNumber)
         {
             ProductRepository productsRepository = new ProductRepository();
+            VariantRepository variantRepository = new VariantRepository();
             List<Product> products = new();
+            List<ProductVariant> variants = new();
+            List<AddProductViewModel> addProducts = new();
             if (!string.IsNullOrEmpty(search))
             {
                 products = productsRepository.Search(search);
+                variants = variantRepository.Search(search);
+                foreach (var product in products)
+                {
+                    AddProductViewModel addProduct = new AddProductViewModel();
+                    addProduct.Product = product;
+                    addProducts.Add(addProduct);
+                }
+                foreach (var variant in variants)
+                {
+                    AddProductViewModel addProduct = new AddProductViewModel();
+                    addProduct.Variant = variant;
+                    addProducts.Add(addProduct);
+                }
             }
             else
             {
                 products = productsRepository.Get();
+                variants = variantRepository.Get();
+                foreach (var product in products)
+                {
+                    AddProductViewModel addProduct = new AddProductViewModel();
+                    addProduct.Product = product;
+                    addProducts.Add(addProduct);
+                }
+                foreach (var variant in variants)
+                {
+                    AddProductViewModel addProduct = new AddProductViewModel();
+                    addProduct.Variant = variant;
+                    addProducts.Add(addProduct);
+                }
             }
-            return View(products);
+            const int pageSize = 5;
+            var rescCount = addProducts.Count();
+            var totalPages = (int)Math.Ceiling((double)rescCount / pageSize);
+            pageNumber = totalPages;
+            var pager = new PaginatedList(pageNumber, totalPages, pageSize, rescCount);
+            var data = addProducts.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            ViewBag.Pager = pager;
+            return View(data);
         }
 
         public IActionResult AddProduct()
@@ -43,6 +79,12 @@ namespace Ecommerce.Controllers
             AddProductViewModel addProduct = new AddProductViewModel();
             addProduct.Categories = new SelectList(categories, "Id", "CategoryName");
             addProduct.Brands = new SelectList(brands, "Id", "BrandName");
+
+            //show error message if product already exists
+            if (TempData["ProductExists"] != null)
+            {
+                ViewBag.Alert = TempData["ProductExists"];
+            }
 
             return View(addProduct);
 
@@ -113,7 +155,7 @@ namespace Ecommerce.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddProduct(AddProductViewModel model,IFormFile picture)
+        public IActionResult AddProduct(AddProductViewModel model)
         {
             if(!ModelState.IsValid) 
             {
@@ -132,12 +174,32 @@ namespace Ecommerce.Controllers
 
                     }
                 }
-                ProductVariant pV = model.Variant;
-                pV.ProductID = p.Id;
-                pV.CreatedAt = DateTime.Now;
-                pV.ImagePath = GetPath(pV.Picture);
-                IRepository<ProductVariant> pVRepository = new GenericRepository<ProductVariant>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
-                pVRepository.Add(pV);
+                ProductVariant pV = new();
+                VariantRepository pVRepository = new VariantRepository();
+                if(p.Id != 0)
+                    pV = pVRepository.GetProductVariant(model.Variant.Size, model.Variant.Color,model.Variant.ProductCode,p.Id);
+                else 
+                    pV = new ProductVariant();
+                if (pV.Id == 0)
+                {
+                    pV = model.Variant;
+                    pV.ProductID = p.Id;
+                    pV.CreatedAt = DateTime.Now;
+                    pV.ImagePath = GetPath(pV.Picture);
+                    pVRepository.Add(pV);
+                }
+                //else display alert that product already exists
+                else
+                {
+                    TempData["ProductExists"] = "Product already exists";
+                    return RedirectToAction("AddProduct", "Product");
+                }
+
+                //ProductVariant pV = model.Variant;
+                //pV.ProductID = p.Id;
+                //pV.CreatedAt = DateTime.Now;
+                //pV.ImagePath = GetPath(pV.Picture);
+                //pVRepository.Add(pV);
             }
 
             return RedirectToAction("ProductList", "Product");

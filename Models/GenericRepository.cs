@@ -137,9 +137,27 @@ namespace Ecommerce.Models
                 while (reader.Read())
                 {
                     var entity = Activator.CreateInstance<TEntity>();
-                    foreach (var prop in typeof(TEntity).GetProperties())
+                    var properties = typeof(TEntity).GetProperties().
+                        Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null);
+                    foreach (var prop in properties)
                     {
-                        prop.SetValue(entity, reader[prop.Name]);
+                        var value = reader[prop.Name];
+                        if (value == DBNull.Value)
+                        {
+                            // Handle null values based on the property type
+                            if (prop.PropertyType == typeof(string))
+                            {
+                                prop.SetValue(entity, string.Empty);
+                            }
+                            else
+                            {
+                                prop.SetValue(entity, Activator.CreateInstance(prop.PropertyType));
+                            }
+                        }
+                        else
+                        {
+                            prop.SetValue(entity, value);
+                        }
                     }
                     entities.Add(entity);
                 }
