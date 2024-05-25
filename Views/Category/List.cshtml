@@ -116,6 +116,7 @@
                             <table class="table table-centered table-hover table-striped mb-0 table-with-checkbox">
                                 <thead class="border border-success bg-success-subtle">
                                     <tr>
+                                        <th class="text-center">Sr#</th>
                                         <th class="text-center">Image</th>
                                         <th class="text-center">Category Name</th>
                                         <th class="text-center">Parent Category Name</th>
@@ -133,9 +134,14 @@
                                     }
                                     else
                                     {
+                                        int i = 1;
                                         foreach (var category in Model)
                                         {
                                             <tr class="text-center">
+                                                <td>@i</td>
+                                                @{
+                                                    i += 1;
+                                                }
                                                 <td>
                                                     <img src="~/@category.ImgPath" alt="" class="icon-shape icon-md align-center" />
                                                 </td>
@@ -153,9 +159,6 @@
                                                 <td>@category.CreatedOn.ToString("dd MMM yyyy")</td>
                                                 <td>
                                                     <div class="btn-group">
-                                                        <a asp-action="Details" asp-route-id="@category.Id" class="btn btn-sm btn-outline-warning">
-                                                            <i class="bi bi-info-circle"></i> Details
-                                                        </a>
                                                         <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-outline-primary">
                                                             <i class="bi bi-pencil-square"></i> Edit
                                                         </a>

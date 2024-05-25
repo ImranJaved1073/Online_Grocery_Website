@@ -119,5 +119,38 @@ namespace Ecommerce.Models
                 }
             }
         }
+
+        public List<ProductVariant> GetVariants (int pId)
+        {
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM ProductVariant WHERE ProductID = @pId", conn))
+                {
+                    cmd.Parameters.AddWithValue("@pId", pId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    List<ProductVariant> variants = new();
+                    while (reader.Read())
+                    {
+                        ProductVariant variant = new ProductVariant();
+                        variant.Id = reader.GetInt32(0);
+                        variant.ProductID = reader.GetInt32(1);
+                        variant.ProductCode = reader.GetString(2);
+                        variant.Color = reader.GetString(3);
+                        variant.Size = reader.GetString(4);
+                        variant.VariantDescription = reader.GetString(5);
+                        variant.Quantity = reader.GetInt32(6);
+                        variant.Price = reader.GetDecimal(7);
+                        variant.SalePrice = reader.GetDecimal(8);
+                        variant.InStock = reader.GetBoolean(9);
+                        variant.CreatedAt = reader.GetDateTime(10);
+                        variant.UpdatedAt = reader.GetDateTime(11);
+                        variant.ImagePath = reader.GetString(12);
+                        variants.Add(variant);
+                    }
+                    return variants;
+                }
+            }
+        }
     }
 }

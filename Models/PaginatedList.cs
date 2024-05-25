@@ -9,6 +9,9 @@
 
         public int TotalItems {  get; private set; }
 
+        public int StartPage { get; set; }
+        public int EndPage { get; set; }
+
         PaginatedList()
         {
         }
@@ -19,6 +22,24 @@
             TotalPages = totalPages;
             PageSize = pageSize;
             TotalItems = totalItems;
+
+            StartPage = PageIndex - 5;
+            EndPage = PageIndex + 4;
+
+            if (StartPage <= 0)
+            {
+                EndPage -= (StartPage - 1);
+                StartPage = 1;
+            }
+
+            if (EndPage > TotalPages)
+            {
+                EndPage = TotalPages;
+                if (EndPage > 10)
+                {
+                    StartPage = EndPage - 9;
+                }
+            }
         }
 
 

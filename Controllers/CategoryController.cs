@@ -12,7 +12,7 @@ namespace Ecommerce.Controllers
         {
             _env = env;
         }
-        public IActionResult List(string search,int pageNumber)
+        public IActionResult List(string search, int pageNumber)
         {
             CategoryRepository categoryRepository = new CategoryRepository();
             List<Category> categories = new();
@@ -36,7 +36,7 @@ namespace Ecommerce.Controllers
             var rescCount = categories.Count();
             var totalPages = (int)Math.Ceiling((double)rescCount / pageSize);
             pageNumber = totalPages;
-            var pager = new PaginatedList(pageNumber,totalPages, pageSize, rescCount);
+            var pager = new PaginatedList(pageNumber, totalPages, pageSize, rescCount);
             var data = categories.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             ViewBag.Pager = pager;
             return View(data);
@@ -47,7 +47,7 @@ namespace Ecommerce.Controllers
         {
             CategoryRepository categoryRepository = new CategoryRepository();
             List<Category> categories = categoryRepository.GetNames().ToList();
-            ViewBag.Categories = new SelectList(categories , "Id", "CategoryName");
+            ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
             return View();
         }
 
@@ -80,16 +80,11 @@ namespace Ecommerce.Controllers
             return Path.Combine("images", "categories", UniqueFileName);
         }
 
+
         public IActionResult Delete(int id)
         {
             CategoryRepository categoryRepository = new CategoryRepository();
-            return View(categoryRepository.Get(id));
-        }
-
-        [HttpPost]
-        public IActionResult Delete(Category c)
-        {
-            CategoryRepository categoryRepository = new CategoryRepository();
+            Category c = categoryRepository.Get(id);
             categoryRepository.Delete(c);
             return RedirectToAction("List", "Category");
         }

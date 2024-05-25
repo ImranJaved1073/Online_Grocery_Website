@@ -15,7 +15,7 @@ namespace Ecommerce.Models
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
-                using (SqlCommand cmd = new SqlCommand("SELECT * FROM Products WHERE Name LIKE @search", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM Product WHERE Name LIKE @search", conn))
                 {
                     cmd.Parameters.AddWithValue("@search", "%" + search + "%");
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -27,7 +27,7 @@ namespace Ecommerce.Models
                         product.Name = reader.GetString(1);
                         product.CategoryID = reader.GetInt32(2);
                         product.BrandID = reader.GetInt32(3);
-                        product.Description = reader.GetString(4);
+                        product.Description = reader.IsDBNull(4) ? DBNull.Value.ToString() : reader.GetString(4);
                         product.CreatedAt = reader.GetDateTime(5);
                         products.Add(product);
                     }

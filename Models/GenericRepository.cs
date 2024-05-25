@@ -78,7 +78,7 @@ namespace Ecommerce.Models
         }
         
 
-        public TEntity? Get(int id)
+        virtual public TEntity? Get(int id)
         {
             var tablename = typeof(TEntity).Name;
 

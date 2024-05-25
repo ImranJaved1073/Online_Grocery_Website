@@ -11,6 +11,12 @@
     }
     <nav class="mt-2 mt-md-0">
         <ul class="pagination mb-0">
+            @if (Model.PageIndex > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-route-pageNumber="1">First</a>
+                </li>
+            }
             <li class="page-item @(Model.HasPreviousPage ? "":"disabled")">
                 <a class="page-link" asp-route-pageNumber="@(Model.PageIndex-1)">Previous</a>
             </li>
@@ -23,6 +29,12 @@
             <li class="page-item @(Model.HasNextPage ? "":"disabled")">
                 <a class="page-link" asp-route-pageNumber="@(Model.PageIndex+1)">Next</a>
             </li>
+            @if (Model.PageIndex < Model.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-route-pageNumber="@Model.TotalPages">Last</a>
+                </li>
+            }
         </ul>
     </nav>
 </div>

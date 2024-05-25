@@ -1,9 +1,9 @@
-﻿@* @{
+﻿@{
     ViewData["Title"] = "Details";
     Layout = "_AdminLayout";
 }
 
-@model Product
+@model AddProductViewModel
 
 <body>
     <div class="container-fluid mt-5">
@@ -16,31 +16,31 @@
                     <div class="card-body">
                         <dl class="row">
                             <dt class="col-sm-4">Product Code</dt>
-                            <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductCode)</dd>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Variant.ProductCode)</dd>
                             <dt class="col-sm-4">Name</dt>
-                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Name)</dd>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Product.Name)</dd>
                             <dt class="col-sm-4">Category</dt>
-                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Category)</dd>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Product.CategoryName)</dd>
                             <dt class="col-sm-4">Weight</dt>
-                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Size)</dd>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Variant.Size)</dd>
                             <dt class="col-sm-4">Quantity</dt>
-                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Quantity)</dd>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Variant.Quantity)</dd>
                             <dt class="col-sm-4">Regular Price</dt>
-                            <dd class="col-sm-8">@Html.DisplayFor(model => model.RegularPrice)</dd>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Variant.Price)</dd>
                             <dt class="col-sm-4">Sale Price</dt>
-                            <dd class="col-sm-8">@Html.DisplayFor(model => model.SalePrice)</dd>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Variant.SalePrice)</dd>
                             <dt class="col-sm-4">Product Description</dt>
-                            <dd class="col-sm-8">@Html.DisplayFor(model => model.ProductDescription)</dd>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Variant.VariantDescription)</dd>
                             <dt class="col-sm-4">In Stock</dt>
-                            <dd class="col-sm-8">@Html.DisplayFor(model => model.InStock)</dd>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Variant.InStock)</dd>
                             <dt class="col-sm-4">Created At</dt>
-                            <dd class="col-sm-8">@Html.DisplayFor(model => model.CreatedAt)</dd>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Variant.CreatedAt)</dd>
                         </dl>
 
                         <div class="text-end">
                             <form asp-action="Details">
-                                <input type="hidden" asp-for="Id" />
-                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">Edit</a>
+                                <input type="hidden" asp-for="Variant.Id" />
+                                <a asp-action="Edit" asp-route-id="@Model.Variant.Id" class="btn btn-warning me-2">Edit</a>
                                 <a href="@Url.Action("ProductList")" class="btn btn-secondary">Back to List</a>
                             </form>
                         </div>
@@ -53,11 +53,10 @@
                         <h4 class="mb-0">Product Image</h4>
                     </div>
                     <div class="card-body text-center">
-                        <img src="~/images/products/@Model.ImageName" class="img-fluid rounded" alt="Product Image">
+                        <img src="~/@Model.Variant.ImagePath" class="img-fluid rounded" alt="Product Image">
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </body>
- *@

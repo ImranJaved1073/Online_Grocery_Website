@@ -9,14 +9,14 @@ namespace Ecommerce.Models
         public int Id { get; set; }
 
         [Required]
-        public string? CategoryName { get; set; }
+        public string CategoryName { get; set; }
 
 
         [ForeignKey("Id")]
         public int? ParentCategoryID { get; set; }
 
         [Required]
-        public string? CategoryDescription { get; set; }
+        public string CategoryDescription { get; set; }
 
         [NotMapped]
         [Required]

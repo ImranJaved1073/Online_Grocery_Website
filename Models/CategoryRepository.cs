@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
 
 namespace Ecommerce.Models
 {
@@ -11,31 +12,17 @@ namespace Ecommerce.Models
 
         public List<Category> GetNames()
         {
-            using (var connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = "SELECT Id,CategoryName,CategoryDescription,ImgPath,CreatedOn FROM Category";
-                var reader = command.ExecuteReader();
-                var names = new List<Category>();
-                while (reader.Read())
-                {
-                    names.Add(new Category
-                    {
-                        Id = reader.GetInt32(0),
-                        CategoryName = reader.GetString(1),
-                        CategoryDescription = reader.GetString(2),
-                        ImgPath = reader.GetString(3),
-                        CreatedOn = reader.GetDateTime(4)
-                    });
-                }
+                string query = "SELECT Id, CategoryName, CategoryDescription, ImgPath, CreatedOn FROM Category";
+                var names = connection.Query<Category>(query).ToList();
                 return names;
             }
         }
 
         public List<Category> GetParents()
         {
-            var query = @"SELECT 
+            string query = @"SELECT 
                             c.Id,
                             c.CategoryName,
                             c.CategoryDescription,
@@ -43,31 +30,15 @@ namespace Ecommerce.Models
                             c.CreatedOn,
                             c.ParentCategoryID,
                             pc.CategoryName AS ParentCategoryName
-                        FROM 
+                          FROM 
                             Category c
-                        LEFT JOIN 
+                          LEFT JOIN 
                             Category pc ON c.ParentCategoryID = pc.Id";
-            using (var connection = new SqlConnection(connectionString))
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(query, connection);
-                cmd.Parameters.AddWithValue("@ParentCategoryID",DBNull.Value);
-                SqlDataReader reader = cmd.ExecuteReader();
-                var names = new List<Category>();
-                while (reader.Read())
-                {
-                    Category c = new();
-                    c.Id = reader.GetInt32(0);
-                    c.CategoryName = reader.GetString(1);
-                    c.CategoryDescription = reader.IsDBNull(2) ? null : reader.GetString(2);
-                    c.ImgPath = reader.IsDBNull(3) ? null : reader.GetString(3);
-                    c.CreatedOn = reader.GetDateTime(4);
-                    c.ParentCategoryID = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5);
-                    c.ParentCategoryName = reader.IsDBNull(6) ? null : reader.GetString(6);
-                    names.Add(c);
-                }
-                return names;
-                
+                var parents = connection.Query<Category>(query).ToList();
+                return parents;
             }
         }
 
@@ -79,7 +50,6 @@ namespace Ecommerce.Models
                     c.CategoryDescription,
                     c.ImgPath,
                     c.CreatedOn,
-                    c.ParentCategoryID,
                     pc.CategoryName AS ParentCategoryName
                 FROM 
                     Category c
@@ -104,11 +74,10 @@ namespace Ecommerce.Models
                             {
                                 Id = reader.GetInt32(0),
                                 CategoryName = reader.GetString(1),
-                                CategoryDescription = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                CategoryDescription = reader.IsDBNull(2) ? DBNull.Value.ToString() : reader.GetString(2),
                                 ImgPath = reader.IsDBNull(3) ? null : reader.GetString(3),
                                 CreatedOn = reader.GetDateTime(4),
-                                ParentCategoryID = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
-                                ParentCategoryName = reader.IsDBNull(6) ? null : reader.GetString(6)
+                                ParentCategoryName = reader.IsDBNull(5) ? DBNull.Value.ToString() : reader.GetString(5)
                             };
                             subCategories.Add(c);
                         }
@@ -126,8 +95,7 @@ namespace Ecommerce.Models
                     c.CategoryName,
                     c.CategoryDescription,
                     c.ImgPath,
-                    c.CreatedOn,
-                    c.ParentCategoryID
+                    c.CreatedOn
                 FROM 
                     Category c
                 WHERE 
@@ -148,10 +116,9 @@ namespace Ecommerce.Models
                             {
                                 Id = reader.GetInt32(0),
                                 CategoryName = reader.GetString(1),
-                                CategoryDescription = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                CategoryDescription = reader.IsDBNull(2) ? DBNull.Value.ToString() : reader.GetString(2),
                                 ImgPath = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                CreatedOn = reader.GetDateTime(4),
-                                ParentCategoryID = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
+                                CreatedOn = reader.GetDateTime(4)
                             };
                             nonParentCategories.Add(c);
                         }
@@ -163,49 +130,17 @@ namespace Ecommerce.Models
         }
 
 
-        public new Category Get(int id)
+        public override Category Get(int id)
         {
             var query = @"
-                        SELECT 
-                            c.Id,
-                            c.CategoryName,
-                            c.CategoryDescription,
-                            c.ImgPath,
-                            c.CreatedOn,
-                            c.ParentCategoryID,
-                            pc.CategoryName AS ParentCategoryName
-                        FROM 
-                            Category c
-                        LEFT JOIN 
-                            Category pc ON c.ParentCategoryID = pc.Id
-                        WHERE 
-                            c.Id = @Id";
+                        SELECT c.Id,c.CategoryName,c.CategoryDescription,c.ImgPath,c.CreatedOn,c.ParentCategoryID,pc.CategoryName AS ParentCategoryName
+                        FROM Category c LEFT JOIN Category pc ON c.ParentCategoryID = pc.Id
+                        WHERE c.Id = @Id";
 
-            using (var connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                Category c = new();
-                connection.Open();
-                using (SqlCommand cmd = new SqlCommand(query, connection))
-                {
-                    cmd.Parameters.AddWithValue("@Id", id);
-
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-
-                            c.Id = reader.GetInt32(0);
-                            c.CategoryName = reader.GetString(1);
-                            c.CategoryDescription = reader.IsDBNull(2) ? null : reader.GetString(2);
-                            c.ImgPath = reader.IsDBNull(3) ? null : reader.GetString(3);
-                            c.CreatedOn = reader.GetDateTime(4);
-                            c.ParentCategoryID = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5);
-                            c.ParentCategoryName = reader.IsDBNull(6) ? null : reader.GetString(6);
-
-                        }
-                    }
-                }
-                return c;
+                var category = connection.QuerySingleOrDefault<Category>(query, new { Id = id });
+                return category?? new Category();
             }
 
 
@@ -236,26 +171,13 @@ namespace Ecommerce.Models
 
         public new List<Category> Search(string search)
         {
-            using (var connection = new SqlConnection(connectionString))
+            string query = @"SELECT Id,CategoryName,CategoryDescription,ImgPath,CreatedOn 
+                          FROM Category WHERE CategoryName LIKE @search";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = "SELECT Id,CategoryName,CategoryDescription,ImgPath,CreatedOn FROM Category where CategoryName like @search";
-                command.Parameters.AddWithValue("@search", "%" + search + "%");
-                var reader = command.ExecuteReader();
-                var names = new List<Category>();
-                while (reader.Read())
-                {
-                    names.Add(new Category
-                    {
-                        Id = reader.GetInt32(0),
-                        CategoryName = reader.GetString(1),
-                        CategoryDescription = reader.GetString(2),
-                        ImgPath = reader.GetString(3),
-                        CreatedOn = reader.GetDateTime(4)
-                    });
-                }
-                return names;
+                var categories = connection.Query<Category>(query, new { search = "%" + search + "%" }).ToList();
+                return categories;
             }
         }
     }

@@ -112,22 +112,17 @@
                     <div class="card-body p-0">
                         <!-- table -->
                         <div class="table-responsive">
-                            <table class="table table-centered table-hover table-border table-striped mb-0 table-with-checkbox">
+                            <table class="table table-centered table-hover table-bordered table-striped mb-0 table-with-checkbox">
                                 <thead class="border border-success bg-success-subtle">
                                     <tr>
-                                        <th class="text-center">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="checkAll" />
-                                                <label class="form-check-label" for="checkAll"></label>
-                                            </div>
-                                        </th>
+                                        <th>Sr#</th>
                                         <th class="text-center">Image</th>
-                                        <th class="text-center">Product Name</th>
+                                        <th class="text-center">Name</th>
                                         <th class="text-center">Category</th>
                                         <th class="text-center">Brand</th>
                                         <th class="text-center">Status</th>
                                         <th class="text-center">Price</th>
-                                        <th class="text-center">Create at</th>
+                                        <th class="text-center">Created at</th>
                                         <th class="text-center">Updated at</th>
                                         <th class="text-center">Action</th>
                                     </tr>
@@ -141,34 +136,37 @@
                                     }
                                     else
                                     {
+                                        int i = 1;
                                         foreach (var product in Model)
                                         {
                                             <tr class="text-center">
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="" id="productOne" />
-                                                        <label class="form-check-label" for="productOne"></label>
-                                                    </div>
-                                                </td>
+                                                <td>@i</td>
+                                                @{
+                                                    i += 1;
+                                                }
                                                 <td>
                                                     <img src="~/@product.Variant.ImagePath" alt="" class="icon-shape icon-md" />
                                                 </td>
-                                                <td><a href="#" class="text-reset">@product.Product.Name</a></td>
-                                                <td>@product.Product.CategoryName</td>
-                                                <td>@product.Product.BrandName</td>
+                                                <td class="fs-6 fw-light"><a href="#" class="text-reset">@product.Product.Name</a></td>
+                                                <td class="fs-6 fw-light">@product.Product.CategoryName</td>
+                                                <td class="fs-6 fw-light">@product.Product.BrandName</td>
                                                 <td>
-                                                    @if (product.Variant.InStock)
+                                                    @if (product.Variant.Quantity > 10)
                                                     {
-                                                        <span class="badge bg-success">In Stock</span>
+                                                        <span class="badge bg-success">@product.Variant.Quantity</span>
                                                     }
-                                                    else
+                                                    else if (product.Variant.Quantity > 0 && product.Variant.Quantity <= 10)
+                                                    {
+                                                        <span class="badge bg-warning">@product.Variant.Quantity</span>
+                                                    }
+                                                    else 
                                                     {
                                                         <span class="badge bg-danger">Out of Stock</span>
                                                     }
                                                 </td>
-                                                <td>@product.Variant.SalePrice</td>
-                                                <td>@product.Variant.CreatedAt.ToString("dd MMM yyyy")</td>
-                                                <td>@product.Variant.UpdatedAt.ToString("dd MMM yyyy")</td>
+                                                <td class="font-monospace fw-lighter">@product.Variant.SalePrice</td>
+                                                <td class="font-monospace fw-lighter">@product.Variant.CreatedAt.ToString("dd-MM-yy")</td>
+                                                <td class="font-monospace fw-lighter">@product.Variant.UpdatedAt.ToString("dd-MM-yy")</td>
                                                 <td>
                                                     <div class="btn-group">
                                                         <a asp-action="Details" asp-route-id="@product.Variant.Id" class="btn btn-sm btn-outline-warning">

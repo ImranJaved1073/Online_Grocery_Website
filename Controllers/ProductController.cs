@@ -22,41 +22,49 @@ namespace Ecommerce.Controllers
         {
             ProductRepository productsRepository = new ProductRepository();
             VariantRepository variantRepository = new VariantRepository();
+            CategoryRepository categoryRepository = new();
+            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
             List<Product> products = new();
             List<ProductVariant> variants = new();
             List<AddProductViewModel> addProducts = new();
+            Category category = new();
+            Brand brand = new();
             if (!string.IsNullOrEmpty(search))
             {
-                products = productsRepository.Search(search);
-                variants = variantRepository.Search(search);
+                products = productsRepository.Search(search).ToList();
                 foreach (var product in products)
                 {
-                    AddProductViewModel addProduct = new AddProductViewModel();
+                    category = categoryRepository.Get(product.CategoryID);
+                    brand = brandRepository.Get(product.BrandID);
+                    product.CategoryName = category.CategoryName;
+                    product.BrandName = brand.BrandName;
+                    AddProductViewModel addProduct = new();
                     addProduct.Product = product;
-                    addProducts.Add(addProduct);
-                }
-                foreach (var variant in variants)
-                {
-                    AddProductViewModel addProduct = new AddProductViewModel();
-                    addProduct.Variant = variant;
-                    addProducts.Add(addProduct);
+                    variants = variantRepository.GetVariants(product.Id);
+                    foreach (var variant in variants)
+                    {
+                        addProduct.Variant = variant;
+                        addProducts.Add(addProduct);
+                    }
                 }
             }
             else
             {
-                products = productsRepository.Get();
-                variants = variantRepository.Get();
+                products = productsRepository.Get().ToList();
                 foreach (var product in products)
                 {
-                    AddProductViewModel addProduct = new AddProductViewModel();
+                    category = categoryRepository.Get(product.CategoryID);
+                    brand = brandRepository.Get(product.BrandID);
+                    product.CategoryName = category.CategoryName;
+                    product.BrandName = brand.BrandName;
+                    AddProductViewModel addProduct = new();
                     addProduct.Product = product;
-                    addProducts.Add(addProduct);
-                }
-                foreach (var variant in variants)
-                {
-                    AddProductViewModel addProduct = new AddProductViewModel();
-                    addProduct.Variant = variant;
-                    addProducts.Add(addProduct);
+                    variants = variantRepository.GetVariants(product.Id);
+                    foreach (var variant in variants)
+                    {
+                        addProduct.Variant = variant;
+                        addProducts.Add(addProduct);
+                    }
                 }
             }
             const int pageSize = 5;
@@ -69,6 +77,19 @@ namespace Ecommerce.Controllers
             return View(data);
         }
 
+        //public IActionResult Details(int id)
+        //{
+        //    //ProductRepository productRepository = new ProductRepository();
+        //    //return View(productRepository.Get(id));
+
+        //    ProductRepository productRepository = new ProductRepository();
+        //    ProductVariant productVariant = new ProductVariant();
+        //    productVariant.ProductID = id;
+        //    VariantRepository variantRepository = new VariantRepository();
+        //    List<ProductVariant> variants = variantRepository.GetVariants(id);
+        //}
+
+
         public IActionResult AddProduct()
         {
             CategoryRepository categoryRepository = new CategoryRepository();
@@ -80,7 +101,7 @@ namespace Ecommerce.Controllers
             addProduct.Categories = new SelectList(categories, "Id", "CategoryName");
             addProduct.Brands = new SelectList(brands, "Id", "BrandName");
 
-            //show error message if product already exists
+            //showing error message if product already exists
             if (TempData["ProductExists"] != null)
             {
                 ViewBag.Alert = TempData["ProductExists"];
@@ -90,30 +111,28 @@ namespace Ecommerce.Controllers
 
         }
 
-        public IActionResult Delete(int id)
-        {
-            ProductRepository productRepository = new ProductRepository();
-            return View(productRepository.Get(id));
-        }
-
-        public IActionResult Details(int id)
-        {
-            ProductRepository productRepository = new ProductRepository();
-            return View(productRepository.Get(id));
-        }
-
-        [HttpPost]
-        public IActionResult Delete(Product p)
-        {
-            ProductRepository productRepository = new ProductRepository();
-            productRepository.Delete(p);
-            return RedirectToAction("ProductList", "Product");
-        }
-
         public IActionResult Edit(int id)
         {
             ProductRepository productRepository = new ProductRepository();
             return View(productRepository.Get(id));
+            //CategoryRepository categoryRepository = new CategoryRepository();
+            //List<Category> categories = categoryRepository.GetNonParentCategories().ToList();
+            //IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            //List<Brand> brands = brandRepository.Get().ToList();
+
+            //ProductRepository productRepository = new ProductRepository();
+            //ProductVariant productVariant = new ProductVariant();
+            //productVariant.ProductID = id;
+            //VariantRepository variantRepository = new VariantRepository();
+            //List<ProductVariant> variants = variantRepository.GetVariants(id);
+            //Product product = productRepository.Get(id);
+            //AddProductViewModel addProduct = new AddProductViewModel();
+            //addProduct.Product = product;
+            //addProduct.Variant = productVariant;
+            //addProduct.Categories = new SelectList(categories, "Id", "CategoryName");
+            //addProduct.Brands = new SelectList(brands, "Id", "BrandName");
+            //addProduct.Variants = variants;
+            //return View(addProduct);
         }
 
         [HttpPost]
@@ -123,6 +142,21 @@ namespace Ecommerce.Controllers
             //p.ImageName = picture.FileName;
             ProductRepository productRepository = new ProductRepository();
             productRepository.Update(p);
+            return RedirectToAction("ProductList", "Product");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            ProductRepository productRepository = new ProductRepository();
+            return View(productRepository.Get(id));
+        }
+
+        
+        [HttpPost]
+        public IActionResult Delete(Product p)
+        {
+            ProductRepository productRepository = new ProductRepository();
+            productRepository.Delete(p);
             return RedirectToAction("ProductList", "Product");
         }
 
@@ -171,7 +205,7 @@ namespace Ecommerce.Controllers
                         p.CreatedAt = DateTime.Now;
                         ProductRepository productRepository = new ProductRepository();
                         productRepository.Add(p);
-
+                        p.Id = productRepository.GetProduct(model.Product.Name, model.Product.CategoryID, model.Product.BrandID).Id;
                     }
                 }
                 ProductVariant pV = new();
