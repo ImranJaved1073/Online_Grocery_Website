@@ -3,24 +3,61 @@
 @inject UserManager<IdentityUser> UserManager
 
 <ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
-    </li>
-    <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-    </li>
-}
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div class="dropdown ms-4">
+            <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="~/images/avatar/avatar-1.jpg" alt="Avatar" class="avatar avatar-md rounded-circle" />
+            </a>
+            <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0 rounded-2">
+                <div class="lh-1 px-4 py-4 border-bottom bg-light">
+                    <h5 class="mb-1 h6">Admin</h5>
+                    <small>Hello @User.Identity?.Name!</small>
+                </div>
+                <ul class="list-unstyled px-2 py-3">
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="@Url.Action("Index", "User")">
+                            <i class="bi bi-cart me-2"></i>Orders
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="@Url.Action("Settings", "User")">
+                            <i class="bi bi-gear me-2"></i>Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="@Url.Action("Address", "User")">
+                            <i class="bi bi-house-door me-2"></i>Address
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="@Url.Action("Payment", "User")">
+                            <i class="bi bi-credit-card me-2"></i>Payment Method
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="../pages/forgot-password.html">
+                            <i class="bi bi-key me-2"></i>Forgot Password
+                        </a>
+                    </li>
+                </ul>
+                <div class="border-top px-4 py-3 bg-light">
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link w-100 text-dark">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+    }
 </ul>
+
