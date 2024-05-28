@@ -25,8 +25,27 @@ namespace Ecommerce.Models
         [Column(TypeName = "Nvarchar(max)")]
         public string Description { get; set; }
 
+        public string ProductCode { get; set; }
+
+        public decimal Weight { get; set; }
+
+        [Required]
+        public decimal SalePrice { get; set; }
+        [Required]
+        public decimal Price { get; set; }
+
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+        [Required]
+        public int Quantity { get; set; }
+
+        [NotMapped]
+        public IFormFile Picture { get; set; }
+
+        public string ImagePath { get; set; }
 
         [NotMapped]
         public string  CategoryName { get; set; }

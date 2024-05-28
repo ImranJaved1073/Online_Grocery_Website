@@ -10,6 +10,7 @@ namespace Ecommerce.Data
             : base(options)
         {
         }
+        public DbSet<Ecommerce.Models.Product> Product { get; set; } = default!;
     }
 
 }

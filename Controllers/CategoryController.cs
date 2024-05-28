@@ -35,7 +35,8 @@ namespace Ecommerce.Controllers
 
             var rescCount = categories.Count();
             var totalPages = (int)Math.Ceiling((double)rescCount / pageSize);
-            pageNumber = totalPages;
+            if (pageNumber < 1)
+                pageNumber = 1;
             var pager = new PaginatedList(pageNumber, totalPages, pageSize, rescCount);
             var data = categories.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             ViewBag.Pager = pager;
