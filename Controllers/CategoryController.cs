@@ -24,6 +24,12 @@ namespace Ecommerce.Controllers
             {
                 categories = categoryRepository.GetParents().ToList();
             }
+            foreach (var category in categories)
+            {
+                //count products in each category
+                ProductRepository productRepository = new ProductRepository();
+                category.ProductCount = productRepository.GetProductsByCategory(category.Id).Count();
+            }
             const int pageSize = 5;
             //int excludeRecords = (pageSize * pageNumer) - pageSize;
             //var totalRecords = categories.Count;
@@ -36,10 +42,14 @@ namespace Ecommerce.Controllers
             var rescCount = categories.Count();
             var totalPages = (int)Math.Ceiling((double)rescCount / pageSize);
             if (pageNumber < 1)
-                pageNumber = 1;
+                pageNumber = totalPages;
             var pager = new PaginatedList(pageNumber, totalPages, pageSize, rescCount);
             var data = categories.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             ViewBag.Pager = pager;
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.PageSize = pageSize;
+
+            
             return View(data);
 
         }
@@ -85,8 +95,8 @@ namespace Ecommerce.Controllers
         public IActionResult Delete(int id)
         {
             CategoryRepository categoryRepository = new CategoryRepository();
-            Category c = categoryRepository.Get(id);
-            categoryRepository.Delete(c);
+            //Category c = categoryRepository.Get(id);
+            categoryRepository.Delete(id);
             return RedirectToAction("List", "Category");
         }
 

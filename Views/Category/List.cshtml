@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "List";
     Layout = "_AdminLayout";
+    int currentPage = ViewBag.CurrentPage;
+    int pageSize = ViewBag.PageSize;
+    int startIndex = (currentPage - 1) * pageSize + 1;
 }
 
 <link href="~lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -134,7 +137,7 @@
                                     }
                                     else
                                     {
-                                        int i = 1;
+                                        int i = startIndex;
                                         foreach (var category in Model)
                                         {
                                             <tr class="text-center">
@@ -154,7 +157,7 @@
                                                 {
                                                     <td>@category.ParentCategoryName</td>
                                                 }
-                                                <td>10</td>
+                                                <td>@category.ProductCount</td>
 
                                                 <td>@category.CreatedOn.ToString("dd MMM yyyy")</td>
                                                 <td>

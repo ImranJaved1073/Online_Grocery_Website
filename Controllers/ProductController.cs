@@ -74,9 +74,11 @@ namespace Ecommerce.Controllers
 
             CategoryRepository categoryRepository = new CategoryRepository();
             IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
-            
+            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+
             product.CategoryName = categoryRepository.Get(product.CategoryID).CategoryName;
             product.BrandName = brandRepository.Get(product.BrandID).BrandName;
+            product.UnitName = unitRepository.Get(product.UnitID).Name;
 
             //showing error message if product already exists
             if (TempData["ProductExists"] != null)
@@ -93,12 +95,17 @@ namespace Ecommerce.Controllers
         {
             CategoryRepository categoryRepository = new CategoryRepository();
             List<Category> categories = categoryRepository.GetNonParentCategories().ToList();
+
             IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
             List<Brand> brands = brandRepository.Get().ToList();
+
+            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            List<Unit> units = unitRepository.Get().ToList();
 
             AddProductViewModel addProduct = new AddProductViewModel();
             addProduct.Categories = new SelectList(categories, "Id", "CategoryName");
             addProduct.Brands = new SelectList(brands, "Id", "BrandName");
+            addProduct.Units = new SelectList(units, "Id", "Name");
 
             //showing error message if product already exists
             if (TempData["ProductExists"] != null)
@@ -126,13 +133,18 @@ namespace Ecommerce.Controllers
 
             CategoryRepository categoryRepository = new CategoryRepository();
             List<Category> categories = categoryRepository.GetNonParentCategories().ToList();
+
             IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
             List<Brand> brands = brandRepository.Get().ToList();
+
+            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            List<Unit> units = unitRepository.Get().ToList();
 
             AddProductViewModel addProduct = new AddProductViewModel
             {
                 Categories = new SelectList(categories, "Id", "CategoryName"),
                 Brands = new SelectList(brands, "Id", "BrandName"),
+                Units = new SelectList(units, "Id", "Name"),
                 Product = product
             };
 
@@ -196,7 +208,7 @@ namespace Ecommerce.Controllers
                 return RedirectToAction("ProductList", "Product");
             }
 
-            productRepository.Delete(product);
+            productRepository.Delete(id);
             return RedirectToAction("ProductList", "Product");
         }
 

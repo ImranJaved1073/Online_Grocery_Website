@@ -42,6 +42,18 @@ namespace Ecommerce.Models
             }
         }
 
+        public List<Category> GetCategoriesWithSubCategories()
+        {
+            var query = @"SELECT * FROM Category WHERE ParentCategoryID is NULL";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                var subCategories = connection.Query<Category>(query).ToList();
+                return subCategories;
+            }
+        }
+
         public List<Category> GetSubCategories(int parentCategoryId)
         {
             var query = @"SELECT 
@@ -50,42 +62,21 @@ namespace Ecommerce.Models
                     c.CategoryDescription,
                     c.ImgPath,
                     c.CreatedOn,
+                    c.ParentCategoryID,
                     pc.CategoryName AS ParentCategoryName
-                FROM 
+                  FROM 
                     Category c
-                LEFT JOIN 
+                  LEFT JOIN 
                     Category pc ON c.ParentCategoryID = pc.Id
-                WHERE 
+                  WHERE 
                     c.ParentCategoryID = @ParentCategoryID";
-
-            var subCategories = new List<Category>();
 
             using (var connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                using (var cmd = new SqlCommand(query, connection))
-                {
-                    cmd.Parameters.AddWithValue("@ParentCategoryID", parentCategoryId);
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Category c = new Category
-                            {
-                                Id = reader.GetInt32(0),
-                                CategoryName = reader.GetString(1),
-                                CategoryDescription = reader.IsDBNull(2) ? DBNull.Value.ToString() : reader.GetString(2),
-                                ImgPath = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                CreatedOn = reader.GetDateTime(4),
-                                ParentCategoryName = reader.IsDBNull(5) ? DBNull.Value.ToString() : reader.GetString(5)
-                            };
-                            subCategories.Add(c);
-                        }
-                    }
-                }
+                var subCategories = connection.Query<Category>(query, new { ParentCategoryID = parentCategoryId }).ToList();
+                return subCategories;
             }
-
-            return subCategories;
         }
 
         public List<Category> GetNonParentCategories()

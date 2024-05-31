@@ -11,5 +11,7 @@ namespace Ecommerce.Models
 
         public IEnumerable<SelectListItem>? Brands { get; set; }
 
+        public IEnumerable<SelectListItem>? Units { get; set; }
+
     }
 }

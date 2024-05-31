@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Dapper;
 
 namespace Ecommerce.Models
 {
@@ -63,22 +64,23 @@ namespace Ecommerce.Models
             }
         }
 
-        public void Delete(TEntity entity)
+        public void Delete(int id)
         {
             var tableName = typeof(TEntity).Name;
             var primaryKey = "Id";
             var query = $"delete from {tableName} where {primaryKey}=@{primaryKey}";
             using (var connection = new SqlConnection(connectionString))
             {
-                connection.Open();
-                var comm = new SqlCommand(query, connection);
-                comm.Parameters.AddWithValue("@" + primaryKey, entity.GetType().GetProperty(primaryKey).GetValue(entity));
-                comm.ExecuteNonQuery();
+                //connection.Open();
+                //var comm = new SqlCommand(query, connection);
+                //comm.Parameters.AddWithValue("@" + primaryKey, entity.GetType().GetProperty(primaryKey).GetValue(entity));
+                //comm.ExecuteNonQuery();
+                connection.Execute(query, new { Id = id });
             }
         }
         
 
-        virtual public TEntity? Get(int id)
+        virtual public TEntity Get(int id)
         {
             var tablename = typeof(TEntity).Name;
 

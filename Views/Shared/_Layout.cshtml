@@ -3,10 +3,11 @@
 <head>
 
     <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Codescandy" name="author">
     <link href="~/lib/tiny-slider/dist/tiny-slider.css" rel="stylesheet" />
+    <link href="~/lib/dropzone/dist/min/dropzone.min.css" rel="stylesheet" />
     <link href="~/lib/slick-carousel/slick/slick.css" rel="stylesheet" />
     <link href="~/lib/slick-carousel/slick/slick-theme.css" rel="stylesheet" />
     <link href="~/lib/nouislider/dist/nouislider.min.css" rel="stylesheet" />
@@ -22,31 +23,7 @@
 
     <!-- Theme CSS -->
     <link rel="stylesheet" href="~/css/theme.min.css">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M8S4MT3EYG"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag("js", new Date());
-
-        gtag("config", "G-M8S4MT3EYG");
-    </script>
-    <script type="text/javascript">
-        (function (c, l, a, r, i, t, y) {
-            c[a] =
-                c[a] ||
-                function () {
-                    (c[a].q = c[a].q || []).push(arguments);
-                };
-            t = l.createElement(r);
-            t.async = 1;
-            t.src = "https://www.clarity.ms/tag/" + i;
-            y = l.getElementsByTagName(r)[0];
-            y.parentNode.insertBefore(t, y);
-        })(window, document, "clarity", "script", "kuc8w5o9nt");
-    </script>
 
     <style>
         footer h2, footer h3 {
@@ -82,10 +59,10 @@
     </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <header class="bg-success-subtle sticky-top">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EGrocer</a>
+                <a class="navbar-brand text-success" asp-area="" asp-controller="Home" asp-action="Index">EGrocer</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -557,9 +534,9 @@
                             <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item text-dark" href="@Url.Action("ShopItems", "Home")">All Products</a></li>
-                                <li><a class="dropdown-item text-dark" href="@Url.Action("ShopAProduct", "Home")">Single Product</a></li>
+                                <li><a class="dropdown-item text-dark" href="@Url.Action("ShopProduct", "Home")">Single Product</a></li>
                                 <li><a class="dropdown-item text-dark" href="@Url.Action("WishList", "Home")">Wishlist</a></li>
-                                <li><a class="dropdown-item text-dark" href="@Url.Action("Cart", "Home")">Shopping Cart</a></li>
+                                <li><a class="dropdown-item text-dark" href="@Url.Action("Cart", "Cart")">Shopping Cart</a></li>
                                 <li><a class="dropdown-item text-dark" href="@Url.Action("CheckOut", "Home")">Checkout</a></li>
                             </ul>
                         </li>
@@ -585,7 +562,7 @@
     @RenderBody()
 
 
-    <footer class="bg-light pt-5">
+    <footer class="bg-success-subtle pt-5">
         <div class="container">
             <div class="row text-md-start text-center">
                 <div class="col-lg-4 col-md-6 col-sm-12 pb-4">
@@ -671,7 +648,7 @@
 
 
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @* <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -685,6 +662,20 @@
     <script src="~/js/vendors/jquery.min.js"></script>
     <script src="~/lib/slick-carousel/slick/slick.min.js"></script>
     <script src="~/js/vendors/slick-slider.js"></script>
+
+    <script src="~/lib/tiny-slider/dist/min/tiny-slider.js"></script>
+    <script src="~/js/vendors/tns-slider.js"></script>
+    <script src="~/js/vendors/zoom.js"></script>
+
+    <script src="~/lib/nouislider/dist/nouislider.min.js"></script>
+    <script src="~/lib/wnumb/wNumb.min.js"></script>
+    <!-- Libs JS -->
+
+    <script src="~/lib/tiny-slider/dist/min/tiny-slider.js"></script>
+    <script src="~/js/vendors/tns-slider.js"></script> *@
+    @await RenderSectionAsync("HomeIndexScripts", required: false)
+    @await RenderSectionAsync("ShopItemsScripts", required: false)
+    @await RenderSectionAsync("ShopItemScripts", required: false)
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

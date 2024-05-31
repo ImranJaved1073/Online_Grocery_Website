@@ -21,6 +21,9 @@ namespace Ecommerce.Models
         [ForeignKey("Brand")]
         public int BrandID { get; set; }
 
+        [ForeignKey("Unit")]
+        public int UnitID { get; set; }
+
         [Required]
         [Column(TypeName = "Nvarchar(max)")]
         public string Description { get; set; }
@@ -52,6 +55,16 @@ namespace Ecommerce.Models
 
         [NotMapped]
         public string BrandName { get; set; }
+
+        [NotMapped]
+        public string UnitName { get; set; }
+
+        public string GetUnitName(int id)
+        {
+            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            UnitName = unitRepository.Get(id).Name;
+            return UnitName;
+        }
     }
 
 }

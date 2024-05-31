@@ -213,38 +213,44 @@
         </div>
     </div>
 
-    <script>
-        function confirmDelete(productId) {
-            $('#deleteConfirmationModal').modal('show');
+    @section Scripts {
+        <script>
+            function confirmDelete(productId) {
+                $('#deleteConfirmationModal').modal('show');
 
-            $('#confirmDeleteBtn').click(function () {
-                // Make an AJAX request to the delete action method
-                $.ajax({
-                    url: '/Product/Delete/' + productId,
-                    type: 'POST',
-                    success: function (result) {
-                        // Handle success response, if needed
-                        // For example, you can reload the page after successful deletion
-                        window.location.reload();
-                    },
-                    error: function (xhr, status, error) {
-                        // Handle error response, if needed
-                        console.error(xhr.responseText);
-                    }
+                $('#confirmDeleteBtn').click(function () {
+                    // Make an AJAX request to the delete action method
+                    $.ajax({
+                        url: '/Product/Delete/' + productId,
+                        type: 'POST',
+                        success: function (result) {
+                            // Handle success response, if needed
+                            // For example, you can reload the page after successful deletion
+                            window.location.reload();
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle error response, if needed
+                            console.error(xhr.responseText);
+                        }
+                    });
                 });
-            });
-        }
-    </script>
+            }
+        </script>
 
 
 
-    <script src="~/js/vendors/jquery.min.js"></script>
+        <script src="~/js/vendors/jquery.min.js"></script>
 
-    <!-- Libs JS -->
-    <!-- <script src="~lib/jquery/dist/jquery.min.js"></script> -->
-    <script src="~lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~lib/simplebar/dist/simplebar.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/lib/simplebar/dist/simplebar.min.js"></script>
 
-    <!-- Theme JS -->
-    <script src="~/js/theme.min.js"></script>
+        <!-- Theme JS -->
+        <script src="~/js/theme.min.js"></script>
+
+        <script src="~/lib/quill/dist/quill.min.js"></script>
+        <script src="~/js/vendors/editor.js"></script>
+        <script src="~/libs/apexcharts/dist/apexcharts.min.js"></script>
+        <script src="~/js/vendors/chart.js"></script>
+    }
 </body>
+

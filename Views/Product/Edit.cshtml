@@ -119,14 +119,18 @@
                                         <label asp-for="Product.Weight" class="form-label">Weight</label>
                                         <div class="input-group mb-3">
                                             <input asp-for="Product.Weight" type="text" class="form-control" placeholder="Weight" aria-label="Text input with select list" required>
-                                            <select class="form-select" aria-label="Weight Unit">
-                                                <option selected disabled>Unit</option>
-                                                <option value="ml">mili-litres(ml)</option>
-                                                <option value="l">litres(l)</option>
-                                                <option value="g">grams(g)</option>
-                                                <option value="mg">mili-grams(mg)</option>
-                                                <option value="kg">kilo-grams(kg)</option>
-                                            </select>
+                                            @if (Model.Units != null)
+                                            {
+                                                <select asp-for="Product.UnitID" class="form-select" asp-items="Model.Units">
+                                                    <option value="Unit">--Select Unit--</option>
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select asp-for="Product.UnitID" class="form-select">
+                                                    <option value="">--Select Unit--</option>
+                                                </select>
+                                            }
                                         </div>
                                         <span asp-validation-for="Product.Weight" class="text-danger"></span>
                                     </div>
@@ -203,7 +207,7 @@
                                 <!-- input -->
                                 <div class="mb-3">
                                     <label asp-for="Product.CreatedAt" class="form-label">Select Date</label>
-                                    <input asp-for="Product.CreatedAt" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                    <input asp-for="Product.CreatedAt" type="datetime-local" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -235,22 +239,20 @@
         </div>
     </main>
 
+    @section Scripts {
 
-    <!-- main -->
-    @*  <!-- Libs JS -->
-    <!-- <script src="~/libs/jquery/dist/jquery.min.js"></script> -->
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/simplebar/dist/simplebar.min.js"></script>
+        <script src="~/js/vendors/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/lib/simplebar/dist/simplebar.min.js"></script>
+        <script src="~/js/theme.min.js"></script>
 
-    <!-- Theme JS -->
-    <script src="~/js/theme.min.js"></script>
-
-    <script src="~/lib/quill/dist/quill.min.js"></script>
-    <script src="~/js/vendors/editor.js"></script>
-    <script src="~/lib/dropzone/dist/min/dropzone.min.js"></script>
-    <script src="~/js/vendors/dropzone.js"></script>
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script> *@
+        <script src="~/lib/quill/dist/quill.min.js"></script>
+        <script src="~/js/vendors/editor.js"></script>
+        <script src="~/libs/apexcharts/dist/apexcharts.min.js"></script>
+        <script src="~/js/vendors/chart.js"></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    }
 
 </body>
 

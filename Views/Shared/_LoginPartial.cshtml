@@ -10,7 +10,7 @@
                 <img src="~/images/avatar/avatar-1.jpg" alt="Avatar" class="avatar avatar-md rounded-circle" />
             </a>
             <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0 rounded-3">
-                <div class="lh-1 px-4 py-4 border-bottom bg-light rounded-top-3">
+                <div class="lh-1 px-4 py-4 border-bottom bg-success-subtle rounded-top-3">
                     <h5 class="mb-1 h6">Admin</h5>
                     <small>Hello @User.Identity?.Name!</small>
                 </div>
@@ -21,7 +21,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item d-flex align-items-center" href="@Url.Action("Settings", "User")">
+                        <a asp-area="Identity" asp-page="/Account/Manage/Index" class="dropdown-item d-flex align-items-center">
                             <i class="bi bi-gear me-2"></i>Settings
                         </a>
                     </li>
@@ -41,7 +41,7 @@
                         </a>
                     </li>
                 </ul>
-                <div class="border-top px-4 py-3 bg-light rounded-bottom-3">
+                <div class="border-top px-4 py-3 bg-success-subtle rounded-bottom-3">
                     <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                         <button type="submit" class="dropdown-item d-flex align-items-center">
                             <i class="bi bi-box-arrow-right me-2"></i>Log Out
