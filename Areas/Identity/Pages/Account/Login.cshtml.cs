@@ -14,18 +14,22 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Ecommerce.Models;
+using Newtonsoft.Json;
 
 namespace Ecommerce.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, UserManager<IdentityUser> userManager)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -101,6 +105,15 @@ namespace Ecommerce.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
+        private void LoadCartFromCookies(string userId)
+        {
+            var cart = CookieHelper.GetCookie<Cart>(HttpContext, "Cart" , userId);
+            if (cart != null && cart.UserId == userId)
+            {
+                HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(cart));
+            }
+        }
+
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/"); // Default redirect to home page
@@ -112,6 +125,12 @@ namespace Ecommerce.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    if (user != null)
+                    {
+                        LoadCartFromCookies(user.Id);
+                        return RedirectToAction("Index", "Home");
+                    }
                     _logger.LogInformation("User logged in.");
 
                     // Redirect to the Dashboard action method of the Admin controller

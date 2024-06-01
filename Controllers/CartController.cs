@@ -21,27 +21,22 @@ namespace Ecommerce.Controllers
         public IActionResult Cart()
         {
             var user = _userManager.GetUserAsync(User).Result;
-            if (user == null) {
+            if (user == null)
+            {
                 return RedirectToAction("Login", "Account");
             }
-            Cart? cart = null;
-            if (!HttpContext.Session.Keys.Contains("Cart"))
+            LoadCartFromCookies(user.Id);
+            Cart? cart = CookieHelper.GetCookie<Cart>(HttpContext, "Cart", user.Id);
+            if (cart == null)
             {
-                HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(new Cart()));
-                cart = JsonConvert.DeserializeObject<Cart>(HttpContext.Session.GetString("Cart")??string.Empty);
-                return View(cart);
+                cart = new Cart();
             }
-            else
-            {
-                cart = JsonConvert.DeserializeObject<Cart>(HttpContext.Session.GetString("Cart")??string.Empty);
-                return View(cart);
-
-            }
+            return View(cart);
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult AddToCart(Product p ,int id)
+        public IActionResult AddToCart(Product p, int id)
         {
             ProductRepository pR = new ProductRepository();
             Product product = pR.Get(id);
@@ -50,18 +45,8 @@ namespace Ecommerce.Controllers
             {
                 if (product != null)
                 {
-                    Cart? cart = new Cart();
-                    if (HttpContext.Session.Keys.Contains("Cart"))
-                    {
-                        var value = HttpContext.Session.GetString("Cart");
-                        cart = value == null ? new Cart() : JsonConvert.DeserializeObject<Cart>(value);
-                    }
-                    else
-                    {
-                        HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(new Cart()));
-                    }
-                    
-                    //Cart cart = HttpContext.Session.GetString("Cart") == null ? new Cart() : JsonConvert.DeserializeObject<Cart>(HttpContext.Session.GetString("Cart"));
+                    Cart? cart = CookieHelper.GetCookie<Cart>(HttpContext, "Cart", user.Id) ?? new Cart();
+
                     CartItem cartItem = new CartItem
                     {
                         Id = product.Id,
@@ -72,30 +57,45 @@ namespace Ecommerce.Controllers
                         Weight = product.Weight,
                         Unit = product.GetUnitName(product.UnitID)
                     };
-                    cart.Items.Add(cartItem);
-                    cart.TotalPrice += product.Price * p.Quantity;
-                    cart.TotalQuantity += p.Quantity;
-                    cart.UserId = user.Id;
-                    HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(cart));
+                    CartItem? item = cart.Items.Find(x => x.Id == product.Id);
+                    if (item == null)
+                    {
+                        cart.Items.Add(cartItem);
+                        cart.TotalPrice += cartItem.Price * cartItem.Quantity;
+                        cart.TotalQuantity += cartItem.Quantity;
+                    }
+                    else
+                    {
+                        item.Quantity += p.Quantity;
+                        cart.TotalPrice += item.Price * p.Quantity;
+                        cart.TotalQuantity += p.Quantity;
+                    }
+                    CookieHelper.SetCookie(HttpContext, "Cart", cart, 4320 , user.Id);
                 }
                 else return NotFound();
             }
             else return RedirectToAction("Login", "Account");
-            return RedirectToAction("Cart");
+            return RedirectToAction("ShopItems","Home");
         }
 
         [HttpPost]
         [Authorize]
         public IActionResult RemoveFromCart(int id)
         {
-            Cart? cart = JsonConvert.DeserializeObject<Cart>(HttpContext.Session.GetString("Cart")??string.Empty);
-            CartItem? cartItem = cart.Items.Find(x => x.Id == id);
+            var user = _userManager.GetUserAsync(User).Result;
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            Cart? cart = CookieHelper.GetCookie<Cart>(HttpContext, "Cart" , user.Id);
+            CartItem? cartItem = cart?.Items.Find(x => x.Id == id);
             if (cartItem != null)
             {
                 cart.TotalPrice -= cartItem.Price * cartItem.Quantity;
                 cart.TotalQuantity -= cartItem.Quantity;
                 cart.Items.Remove(cartItem);
-                HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(cart));
+                CookieHelper.SetCookie(HttpContext, "Cart", cart, 4320 , user.Id);
             }
             return RedirectToAction("Cart");
         }
@@ -104,8 +104,14 @@ namespace Ecommerce.Controllers
         [Authorize]
         public IActionResult UpdateCart(int id, int quantity)
         {
-            Cart? cart = JsonConvert.DeserializeObject<Cart>(HttpContext.Session.GetString("Cart")??string.Empty);
-            CartItem? cartItem = cart.Items.Find(x => x.Id == id);
+            var user = _userManager.GetUserAsync(User).Result;
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            Cart? cart = CookieHelper.GetCookie<Cart>(HttpContext, "Cart", user.Id);
+            CartItem? cartItem = cart?.Items.Find(x => x.Id == id);
             if (cartItem != null)
             {
                 cart.TotalPrice -= cartItem.Price * cartItem.Quantity;
@@ -113,9 +119,31 @@ namespace Ecommerce.Controllers
                 cartItem.Quantity = quantity;
                 cart.TotalPrice += cartItem.Price * cartItem.Quantity;
                 cart.TotalQuantity += cartItem.Quantity;
-                HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(cart));
+                CookieHelper.SetCookie(HttpContext, "Cart", cart, 4320, user.Id);
             }
             return RedirectToAction("Cart");
         }
+
+
+        private void LoadCartFromCookies(string userId)
+        {
+            var cart = CookieHelper.GetCookie<Cart>(HttpContext, "Cart" , userId);
+            if (cart != null && cart.UserId == userId)
+            {
+                HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(cart));
+            }
+        }
+
+        private void SaveCartToCookies(string userId)
+        {
+            var cartData = HttpContext.Session.GetString("Cart");
+            if (cartData != null)
+            {
+                var cart = JsonConvert.DeserializeObject<Cart>(cartData);
+                cart.UserId = userId;
+                CookieHelper.SetCookie(HttpContext, "Cart", cart, 4320 , userId);
+            }
+        }
+
     }
 }

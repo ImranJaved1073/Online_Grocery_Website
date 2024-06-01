@@ -155,7 +155,7 @@
                                             <div class="fw-bold">Subtotal</div>
                                         </div>
                                         @{
-                                            decimal subtotal = Model.TotalPrice - Model.TotalDiscount;
+                                            decimal subtotal = Math.Round(Model.TotalPrice - Model.TotalDiscount, 0);
                                         }
                                         <span class="fw-bold">@subtotal</span>
                                     </li>
@@ -164,33 +164,9 @@
                             <div class="d-grid mb-1 mt-4">
                                 <!-- btn -->
                                 <button class="btn btn-primary btn-lg d-flex justify-content-between align-items-center" type="submit">
-                                    Go to Checkout
-                                    <span class="fw-bold">$67.00</span>
+                                    Proceed to Checkout
+                                    <span class="fw-bold">Rs.@(subtotal)</span>
                                 </button>
-                            </div>
-                            <!-- text -->
-                            <p>
-                                <small>
-                                    By placing your order, you agree to be bound by the Freshcart
-                                    <a href="#!">Terms of Service</a>
-                                    and
-                                    <a href="#!">Privacy Policy.</a>
-                                </small>
-                            </p>
-
-                            <!-- heading -->
-                            <div class="mt-8">
-                                <h2 class="h5 mb-3">Add Promo or Gift Card</h2>
-                                <form>
-                                    <div class="mb-2">
-                                        <!-- input -->
-                                        <label for="giftcard" class="form-label sr-only">Email address</label>
-                                        <input type="text" class="form-control" id="giftcard" placeholder="Promo or Gift Card" />
-                                    </div>
-                                    <!-- btn -->
-                                    <div class="d-grid"><button type="submit" class="btn btn-outline-dark mb-1">Redeem</button></div>
-                                    <p class="text-muted mb-0"><small>Terms & Conditions apply</small></p>
-                                </form>
                             </div>
                         </div>
                     </div>
