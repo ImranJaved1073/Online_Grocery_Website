@@ -56,6 +56,26 @@
                 color: #007bff;
             }
 
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        footer {
+            flex-shrink: 0;
+        }
+
+
     </style>
 </head>
 <body>
@@ -537,7 +557,7 @@
                                 <li><a class="dropdown-item text-dark" href="@Url.Action("ShopProduct", "Home")">Single Product</a></li>
                                 <li><a class="dropdown-item text-dark" href="@Url.Action("WishList", "Home")">Wishlist</a></li>
                                 <li><a class="dropdown-item text-dark" href="@Url.Action("Cart", "Cart")">Shopping Cart</a></li>
-                                <li><a class="dropdown-item text-dark" href="@Url.Action("CheckOut", "Home")">Checkout</a></li>
+                                <li><a class="dropdown-item text-dark" href="@Url.Action("CheckOut", "Cart")">Checkout</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -559,7 +579,11 @@
     </header>
 
     <script src="~/js/vendors/validation.js"></script>
-    @RenderBody()
+    <div class="wrapper d-flex flex-column min-vh-100">
+        <main class="flex-grow-1">
+            @RenderBody()
+        </main>
+        
 
 
     <footer class="bg-success-subtle pt-5">
@@ -645,6 +669,7 @@
             </div>
         </div>
     </footer>
+    </div>
 
 
 

@@ -125,16 +125,20 @@ namespace Ecommerce.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByEmailAsync(Input.Email);
-                    if (user != null)
+                    if (Input.Email == "admin@gmail.com" && Input.Password == "Admin@786")
                     {
-                        LoadCartFromCookies(user.Id);
+                        _logger.LogInformation("Admin user logged in.");
+                        return RedirectToAction("Dashboard", "Admin");
+                    }
+                    else
+                    {
+                        var user = await _userManager.FindByEmailAsync(Input.Email);
+                        if (user != null)
+                            LoadCartFromCookies(user.Id);
+
+                        _logger.LogInformation("User logged in.");
                         return RedirectToAction("Index", "Home");
                     }
-                    _logger.LogInformation("User logged in.");
-
-                    // Redirect to the Dashboard action method of the Admin controller
-                    return RedirectToAction("Dashboard", "Admin");
                 }
                 if (result.RequiresTwoFactor)
                 {

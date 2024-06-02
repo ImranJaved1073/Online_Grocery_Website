@@ -15,31 +15,82 @@ namespace Ecommerce.Models
             connectionString = c;
         }
 
+        //public void Add(TEntity entity)
+        //{
+        //    var tablename = typeof(TEntity).Name;
+
+        //    var properties =
+        //        typeof(TEntity).GetProperties().Where(p => p.Name != "Id" && p.GetCustomAttribute<NotMappedAttribute>() == null);
+        //    var columnNames = string.Join(",", properties.Select(x => x.Name));
+        //    var parameterName =
+        //        string.Join(",", properties.Select(y => "@" + y.Name));
+
+        //    var query = $"insert into {tablename} ({columnNames}) values({parameterName}) ";
+
+        //    using (var connection = new SqlConnection(connectionString))
+        //    {
+        //        connection.Open();
+        //        var comm = new SqlCommand(query, connection);
+        //        foreach (var prop in properties)
+        //        {
+        //            var value = prop.GetValue(entity) ?? DBNull.Value;
+        //            comm.Parameters.AddWithValue("@" + prop.Name, value);
+        //        }
+        //        comm.ExecuteNonQuery();
+        //    }
+        //}
         public void Add(TEntity entity)
         {
-            var tablename = typeof(TEntity).Name;
+            var tableName = typeof(TEntity).Name;
+            var properties = typeof(TEntity).GetProperties()
+                .Where(p => p.Name != "Id" && p.GetCustomAttribute<NotMappedAttribute>() == null);
 
-            var properties =
-                typeof(TEntity).GetProperties().Where(p => p.Name != "Id" && p.GetCustomAttribute<NotMappedAttribute>() == null);
-            var columnNames = string.Join(",", properties.Select(x => x.Name));
-            var parameterName =
-                string.Join(",", properties.Select(y => "@" + y.Name));
+            var columnNames = new List<string>();
+            var parameterNames = new List<string>();
+            var parameters = new DynamicParameters();
 
-            var query = $"insert into {tablename} ({columnNames}) values({parameterName}) ";
+            foreach (var prop in properties)
+            {
+                if (IsComplexType(prop.PropertyType))
+                {
+                    var complexValue = prop.GetValue(entity);
+                    if (complexValue != null)
+                    {
+                        foreach (var subProp in prop.PropertyType.GetProperties().Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null))
+                        {
+                            var columnName = subProp.Name;
+                            var parameterName = $"@{prop.Name}_{subProp.Name}";
+                            columnNames.Add(columnName);
+                            parameterNames.Add(parameterName);
+                            var value = subProp.GetValue(complexValue) ?? DBNull.Value;
+                            parameters.Add(parameterName, value);
+                        }
+                    }
+                }
+                else
+                {
+                    var columnName = prop.Name;
+                    var parameterName = $"@{prop.Name}";
+                    columnNames.Add(columnName);
+                    parameterNames.Add(parameterName);
+                    var value = prop.GetValue(entity) ?? DBNull.Value;
+                    parameters.Add(parameterName, value);
+                }
+            }
+
+            var query = $"INSERT INTO {tableName} ({string.Join(",", columnNames)}) VALUES ({string.Join(",", parameterNames)})";
 
             using (var connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                var comm = new SqlCommand(query, connection);
-                foreach (var prop in properties)
-                {
-                    var value = prop.GetValue(entity) ?? DBNull.Value;
-                    comm.Parameters.AddWithValue("@" + prop.Name, value);
-                }
-                comm.ExecuteNonQuery();
+                connection.Execute(query, parameters);
             }
         }
 
+        private bool IsComplexType(Type type)
+        {
+            return type.IsClass && type != typeof(string);
+        }
         public void Update(TEntity entity)
         {
             var tableName = typeof(TEntity).Name;
@@ -124,45 +175,103 @@ namespace Ecommerce.Models
             return default;
         }
 
+        //public List<TEntity> Get()
+        //{
+        //    var tablename = typeof(TEntity).Name;
+
+        //    var query = $"select * from {tablename}";
+
+        //    using (var connection = new SqlConnection(connectionString))
+        //    {
+        //        connection.Open();
+        //        SqlCommand cmd = new SqlCommand(query, connection);
+        //        var reader = cmd.ExecuteReader();
+        //        var entities = new List<TEntity>();
+        //        while (reader.Read())
+        //        {
+        //            var entity = Activator.CreateInstance<TEntity>();
+        //            var properties = typeof(TEntity).GetProperties().
+        //                Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null);
+        //            foreach (var prop in properties)
+        //            {
+        //                var value = reader[prop.Name];
+        //                if (value == DBNull.Value)
+        //                {
+        //                    // Handle null values based on the property type
+        //                    if (prop.PropertyType == typeof(string))
+        //                    {
+        //                        prop.SetValue(entity, string.Empty);
+        //                    }
+        //                    else
+        //                    {
+        //                        prop.SetValue(entity, Activator.CreateInstance(prop.PropertyType));
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    prop.SetValue(entity, value);
+        //                }
+        //            }
+        //            entities.Add(entity);
+        //        }
+        //        return entities;
+        //    }
+        //}
+
         public List<TEntity> Get()
         {
-            var tablename = typeof(TEntity).Name;
+            var tableName = typeof(TEntity).Name;
+            var properties = typeof(TEntity).GetProperties()
+                .Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null);
 
-            var query = $"select * from {tablename}";
+            var columnNames = new List<string>();
+            foreach (var prop in properties)
+            {
+                if (IsComplexType(prop.PropertyType))
+                {
+                    columnNames.AddRange(prop.PropertyType.GetProperties().Select(p => p.Name));
+                }
+                else
+                {
+                    columnNames.Add(prop.Name);
+                }
+            }
+
+            var query = $"SELECT {string.Join(",", columnNames)} FROM {tableName}";
 
             using (var connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                SqlCommand cmd = new SqlCommand(query, connection);
-                var reader = cmd.ExecuteReader();
+                var result = connection.Query<dynamic>(query);
+
                 var entities = new List<TEntity>();
-                while (reader.Read())
+
+                foreach (var row in result)
                 {
                     var entity = Activator.CreateInstance<TEntity>();
-                    var properties = typeof(TEntity).GetProperties().
-                        Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null);
+
                     foreach (var prop in properties)
                     {
-                        var value = reader[prop.Name];
-                        if (value == DBNull.Value)
+                        if (IsComplexType(prop.PropertyType))
                         {
-                            // Handle null values based on the property type
-                            if (prop.PropertyType == typeof(string))
+                            var complexInstance = Activator.CreateInstance(prop.PropertyType);
+                            foreach (var subProp in prop.PropertyType.GetProperties())
                             {
-                                prop.SetValue(entity, string.Empty);
+                                var value = ((IDictionary<string, object>)row)[subProp.Name];
+                                subProp.SetValue(complexInstance, value == DBNull.Value ? null : value);
                             }
-                            else
-                            {
-                                prop.SetValue(entity, Activator.CreateInstance(prop.PropertyType));
-                            }
+                            prop.SetValue(entity, complexInstance);
                         }
                         else
                         {
-                            prop.SetValue(entity, value);
+                            var value = ((IDictionary<string, object>)row)[prop.Name];
+                            prop.SetValue(entity, value == DBNull.Value ? null : value);
                         }
                     }
+
                     entities.Add(entity);
                 }
+
                 return entities;
             }
         }

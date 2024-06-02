@@ -36,4 +36,21 @@ public static class CookieHelper
         var value = context.Request.Cookies[uniqueKey];
         return value == null ? default(T) : JsonConvert.DeserializeObject<T>(value);
     }
+
+    public static void ClearCartCookies(HttpContext context, string userId)
+    {
+        var userCookieListKey = $"UserCookies_{userId}";
+        var existingCookies = context.Request.Cookies[userCookieListKey];
+        if (existingCookies != null)
+        {
+            List<string> userCookies = JsonConvert.DeserializeObject<List<string>>(existingCookies);
+            foreach (var cookie in userCookies)
+            {
+                context.Response.Cookies.Delete(cookie);
+            }
+
+            // Clear the user-specific cookie list
+            context.Response.Cookies.Delete(userCookieListKey);
+        }
+    }
 }

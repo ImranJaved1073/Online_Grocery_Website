@@ -17,10 +17,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminPolicy", policy =>
-    policy.RequireClaim(ClaimTypes.Email, "abcd@gmail.com"));
+    policy.RequireClaim(ClaimTypes.Email, "admin@gmail.com"));
 
 });
-
+//builder.Services.AddAuthorizationBuilder()
+//    .AddPolicy("AdminPolicy", policy =>
+//    policy.RequireClaim(ClaimTypes.Email, "abcd@gmail.com"));
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 
