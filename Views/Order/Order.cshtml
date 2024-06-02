@@ -81,7 +81,7 @@
                                 <p class="fs-sm fw-bold">@order.TotalBill.ToString("C")</p>
                             </div>
                         </div>
-                        <a href="@Url.Action("Details", new { id = order.Id })" class="btn btn-primary w-100" style="border-radius: 0;">Order Details</a>
+                        <a asp-action="OrderDetails" asp-controller="Order" asp-route-id="@order.Id" class="btn btn-primary w-100" style="border-radius: 0;">Order Details</a>
                     </div>
                 </div>
             </div>

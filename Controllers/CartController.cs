@@ -205,6 +205,10 @@ namespace Ecommerce.Controllers
             return deliveryDays;
         }
 
+        public IActionResult NotFound()
+        {
+            return View();
+        }
 
 
         private void LoadCartFromCookies(string userId)
