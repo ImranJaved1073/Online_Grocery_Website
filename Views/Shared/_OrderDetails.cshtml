@@ -1,0 +1,45 @@
+﻿@model Orders
+
+<div class="row">
+    <!-- Order Details -->
+    <div class="col-12 col-lg-8">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2>Order Details</h2>
+                <p><strong>Order # @Model.OrderNum</strong></p>
+                <p><strong>Customer Name:</strong> @Model.User.UserName</p>
+                <p><strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</p>
+                <p><strong>Status:</strong> <span class="badge bg-@(Model.Status == "Pending" ? "warning" : Model.Status == "Delivered" ? "success" : "danger")">@Model.Status</span></p>
+                <p><strong>Total:</strong> $@Model.TotalBill</p>
+                <ul class="list-group list-group-flush">
+                    @foreach (var item in Model.OrderDetails)
+                    {
+                        <li class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col-2">
+                                    <img src="~/@item.Product.ImagePath" alt="@item.Product.Name" width="50" height="50" class="me-2">
+                                </div>
+                                <div class="col-10">
+                                    @item.Product.Name (x @item.Quantity) (Rs.@item.Price)
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <p><strong>Shipping Address:</strong></p>
+                <p>@Model.ShipAddress.Address</p>
+                <p><strong>Payment Method:</strong></p>
+                <p>@Model.CheckOut.PaymentMethod</p>
+            </div>
+        </div>
+    </div>
+    <!-- Order Timeline -->
+    <div class="col-12 col-lg-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2>Order Timeline</h2>
+                <p><strong>Order Placed:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</p>
+            </div>
+        </div>
+    </div>
+</div>

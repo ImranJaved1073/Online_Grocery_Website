@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,7 @@ using static NuGet.Packaging.PackagingConstants;
 
 namespace Ecommerce.Controllers
 {
+    [Authorize(Policy = "AdminPolicy")]
     public class ProductController : Controller
     {
         private readonly IWebHostEnvironment _env;
@@ -91,8 +93,24 @@ namespace Ecommerce.Controllers
         }
 
 
-        public IActionResult AddProduct()
+        public IActionResult AddProduct(int id)
         {
+            AddProductViewModel addProduct = new AddProductViewModel();
+            if (id != 0)
+            {
+                ProductRepository productRepository = new ProductRepository();
+                Product product = productRepository.Get(id);
+
+                // Check if the product exists
+                if (product == null)
+                {
+                    // Product does not exist, show an alert
+                    TempData["ProductNotFound"] = "Product not found";
+                    return RedirectToAction("ProductList", "Product");
+                }
+                addProduct.Product = product;
+            }
+
             CategoryRepository categoryRepository = new CategoryRepository();
             List<Category> categories = categoryRepository.GetNonParentCategories().ToList();
 
@@ -102,7 +120,6 @@ namespace Ecommerce.Controllers
             IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
             List<Unit> units = unitRepository.Get().ToList();
 
-            AddProductViewModel addProduct = new AddProductViewModel();
             addProduct.Categories = new SelectList(categories, "Id", "CategoryName");
             addProduct.Brands = new SelectList(brands, "Id", "BrandName");
             addProduct.Units = new SelectList(units, "Id", "Name");
@@ -114,48 +131,8 @@ namespace Ecommerce.Controllers
             }
 
             return View(addProduct);
-
         }
 
-        public IActionResult Edit(int id)
-        {
-
-            ProductRepository productRepository = new ProductRepository();
-            Product product = productRepository.Get(id);
-
-            // Check if the product exists
-            if (product == null)
-            {
-                // Product does not exist, show an alert
-                TempData["ProductNotFound"] = "Product not found";
-                return RedirectToAction("ProductList", "Product");
-            }
-
-            CategoryRepository categoryRepository = new CategoryRepository();
-            List<Category> categories = categoryRepository.GetNonParentCategories().ToList();
-
-            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
-            List<Brand> brands = brandRepository.Get().ToList();
-
-            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
-            List<Unit> units = unitRepository.Get().ToList();
-
-            AddProductViewModel addProduct = new AddProductViewModel
-            {
-                Categories = new SelectList(categories, "Id", "CategoryName"),
-                Brands = new SelectList(brands, "Id", "BrandName"),
-                Units = new SelectList(units, "Id", "Name"),
-                Product = product
-            };
-
-            //showing error message if product already exists
-            if (TempData["ProductExists"] != null)
-            {
-                ViewBag.Alert = TempData["ProductExists"];
-            }
-
-            return View(addProduct);
-        }
 
         //[HttpPost]
         //public IActionResult Edit(Product p, IFormFile picture)
@@ -256,7 +233,8 @@ namespace Ecommerce.Controllers
                     {
                         // Product does not exist, add new product
                         product = model.Product;
-                        product.CreatedAt = DateTime.Now;
+                        product.CreatedAt = string.IsNullOrEmpty(model.Product.CreatedAt.ToString()) ? DateTime.Now : model.Product.CreatedAt;
+                        product.UpdatedAt = string.IsNullOrEmpty(model.Product.UpdatedAt.ToString()) ? DateTime.Now : model.Product.UpdatedAt;
                         product.ImagePath = GetPath(model.Product.Picture);
                         productRepository.Add(product);
 

@@ -21,11 +21,13 @@ namespace Ecommerce.Controllers
             List<Product> products = new List<Product>();
             IRepository<Product> productRepository = new GenericRepository<Product>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
             products = productRepository.Get().ToList();
+            //getting top 10 products in last 7 days 
+            products = products.OrderByDescending(p => p.CreatedAt > DateTime.Now.AddDays(-7)).Take(10).ToList();
             ViewBag.Products = products;
             return View(nonparents);
         }
 
-        public IActionResult ShopItems(int? id,int pageNumber,int pageSize)
+        public IActionResult ShopItems(int? id,int pageNumber,int pageSize,string view)
         {
             CategoryRepository _categoryRepository = new CategoryRepository();
             List<Category> parents = _categoryRepository.GetCategoriesWithSubCategories();
@@ -69,6 +71,7 @@ namespace Ecommerce.Controllers
             ViewBag.Pages = pages;
             ViewBag.CurrentPage = pageNumber;
             ViewBag.PageSize = pageSize;
+            ViewBag.View = view;
 
             return View(data);
         }

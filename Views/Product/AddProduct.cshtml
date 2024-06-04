@@ -1,5 +1,4 @@
-﻿
-@model AddProductViewModel
+﻿@model AddProductViewModel
 
 @{
     Layout = "_AdminLayout";
@@ -75,13 +74,28 @@
                 <div class="col-md-12">
                     <div class="d-md-flex justify-content-between align-items-center">
                         <div>
-                            <h2>Add New Product</h2>
+                            @if (Model.Product != null)
+                            {
+                                <h2>Edit Product</h2>
+                            }
+                            else
+                            {
+                                <h2>Add New Product</h2>
+                            }
                             <!-- breadcrumb -->
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb mb-0">
                                     <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Dashboard</a></li>
                                     <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Products</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Add New Product</li>
+                                    @if (Model.Product != null)
+                                    {
+                                        <li class="breadcrumb-item active" aria-current="page">Edit Product</li>
+                                    }
+                                    else
+                                    {
+                                        <li class="breadcrumb-item active" aria-current="page">Add New Product</li>
+                                    }
+
                                 </ol>
                             </nav>
                         </div>
@@ -99,7 +113,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
-            <form method="post" action="/Product/AddProduct" enctype="multipart/form-data">
+            <form method="post" asp-action="@(Model.Product == null ? "AddProduct" : "Edit")" enctype="multipart/form-data">
+                @if (Model.Product != null)
+                {
+                    <input type="hidden" asp-for="Product.Id" />
+                }
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
                     <div class="col-lg-8">
@@ -143,13 +161,6 @@
                                         <span asp-validation-for="Product.Quantity" class="text-danger"></span>
                                     </div>
                                     <div class="col-lg-6 mb-3">
-                                        @* <label asp-for="Product.CategoryName" class="form-label">Product Category</label>
-                                        <select asp-for="Product.CategoryName" class="form-select">
-                                            <option selected disabled>Select Product Category</option>
-                                            <option value="Dairy, Bread & Eggs">Dairy, Bread & Eggs</option>
-                                            <option value="Snacks & Munchies">Snacks & Munchies</option>
-                                            <option value="Fruits & Vegetables">Fruits & Vegetables</option>
-                                        </select> *@
                                         <label asp-for="Product.CategoryID" class="form-label">Category</label>
                                         @if (Model.Categories != null)
                                         {
@@ -206,10 +217,27 @@
                                     <input asp-for="Product.ProductCode" type="text" class="form-control" placeholder="Enter Product Code" required>
                                 </div>
                                 <!-- input -->
-                                <div class="mb-3">
-                                    <label asp-for="Product.CreatedAt" class="form-label">Select Date</label>
-                                    <input asp-for="Product.CreatedAt" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
-                                </div>
+                                
+                                    @if (Model.Product != null)
+                                    {
+                                    <div class="mb-3">
+                                        <label asp-for="Product.UpdatedAt" class="form-label">Select Date</label>
+                                        <input asp-for="Product.UpdatedAt" type="datetime-local" class="form-control">
+                                    </div>
+                                    <div class="mb-3 ">
+                                        <label asp-for="Product.CreatedAt" class="form-label" readonly>Created Date</label>
+                                        <input asp-for="Product.CreatedAt" type="datetime-local" class="form-control" readonly>
+                                    </div>
+                                    }
+                                    else
+                                    {
+                                    <div class="mb-3">
+                                        <label asp-for="Product.CreatedAt" class="form-label">Select Date</label>
+                                        <input asp-for="Product.CreatedAt" type="datetime-local" class="form-control">
+                                    </div>
+                                    }
+                                    
+                                
                             </div>
                         </div>
 
@@ -232,7 +260,14 @@
                         </div>
                         <!-- button -->
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Create Product</button>
+                            @if (Model.Product != null)
+                            {
+                                <button type="submit" class="btn btn-primary">Update Product</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-primary">Create Product</button>
+                            }
                         </div>
                     </div>
                 </div>

@@ -18,5 +18,15 @@ namespace Ecommerce.Models
                 return order;
             }
         }
+
+        public void UpdateStatus(Orders order)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string comm = $"Update Orders SET Status='{order.Status}' WHERE Id='{order.Id}'";
+                conn.Execute(comm, new { OrderNum = order.OrderNum });
+            }
+        }
     }
 }
