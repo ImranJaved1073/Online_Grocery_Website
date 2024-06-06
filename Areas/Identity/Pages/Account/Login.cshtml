@@ -23,31 +23,6 @@
 
     <!-- Theme CSS -->
     <link rel="stylesheet" href="~/css/theme.min.css">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M8S4MT3EYG"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag("js", new Date());
-
-        gtag("config", "G-M8S4MT3EYG");
-    </script>
-    <script type="text/javascript">
-        (function (c, l, a, r, i, t, y) {
-            c[a] =
-                c[a] ||
-                function () {
-                    (c[a].q = c[a].q || []).push(arguments);
-                };
-            t = l.createElement(r);
-            t.async = 1;
-            t.src = "https://www.clarity.ms/tag/" + i;
-            y = l.getElementsByTagName(r)[0];
-            y.parentNode.insertBefore(t, y);
-        })(window, document, "clarity", "script", "kuc8w5o9nt");
-    </script>
 
 </head>
 
@@ -55,7 +30,7 @@
     <main>
         <!-- section -->
         <section class="my-lg-14 my-8">
-            <div class="container rounded bg-light-subtle">
+            <div class="container rounded">
                 <!-- row -->
                 <div class="row justify-content-center align-items-center">
                     <div class="col-12 col-md-6 col-lg-4 order-lg-1 order-2">
@@ -63,10 +38,10 @@
                         <img src="~/images/svg-graphics/signin-g.svg" alt="signin" class="img-fluid" />
                     </div>
                     <!-- col -->
-                    <div class="mt-2 mb-2 col-12 col-md-6 offset-lg-1 col-lg-4 order-lg-2 order-1 rounded bg-primary-subtle">
+                    <div class="mt-2 mb-2 col-12 col-md-6 offset-lg-1 col-lg-4 order-lg-2 order-1 rounded bg-light-subtle">
                         <div class="mb-lg-9 mb-5">
                             <h1 class="text-center mb-1 h2 fw-bold">Login</h1>
-                            <p class="text-center">Welcome back to FreshCart! Enter your email to Sign in.</p>
+                            <p class="text-center">Welcome back! Enter your email to Login.</p>
                         </div>
 
                         <form id="account" method="post" class="needs-validation" novalidate>
@@ -101,7 +76,7 @@
                                     </div>
                                     <div>
                                         Forgot password?
-                                        <a href="../pages/forgot-password.html">Reset It</a>
+                                        <a asp-area="Identity" asp-page="/Account/ForgotPassword">Reset It</a>
                                     </div>
                                 </div>
                                 <!-- btn -->

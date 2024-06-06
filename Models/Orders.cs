@@ -18,8 +18,6 @@ namespace Ecommerce.Models
         public decimal TotalBill { get; set; }
         //public decimal TotalDiscount { get; set; }
         public CheckOut CheckOut { get; set; }
-
-        public ShipAddress ShipAddress { get; set; }
         //public string PaymentStatus { get; set; }
 
         [NotMapped]

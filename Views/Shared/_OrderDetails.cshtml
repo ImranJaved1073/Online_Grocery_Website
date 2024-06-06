@@ -5,31 +5,54 @@
     <div class="col-12 col-lg-8">
         <div class="card mb-3">
             <div class="card-body">
-                <h2>Order Details</h2>
-                <p><strong>Order # @Model.OrderNum</strong></p>
-                <p><strong>Customer Name:</strong> @Model.User.UserName</p>
-                <p><strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</p>
-                <p><strong>Status:</strong> <span class="badge bg-@(Model.Status == "Pending" ? "warning" : Model.Status == "Delivered" ? "success" : "danger")">@Model.Status</span></p>
-                <p><strong>Total:</strong> $@Model.TotalBill</p>
-                <ul class="list-group list-group-flush">
+                <h2 class="mb-4">Invoice</h2>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Order Information</h5>
+                        <p><strong>Order Number:</strong> @Model.OrderNum</p>
+                        <p><strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <h5>Customer Details</h5>
+                        <p><strong>Customer Name:</strong> @Model.User.UserName</p>
+                        <p><strong>Email:</strong> @Model.User.Email</p>
+                    </div>
+                </div>
+                <h5>Order Items</h5>
+                <div class="list-group mb-4">
                     @foreach (var item in Model.OrderDetails)
                     {
-                        <li class="list-group-item">
-                            <div class="row align-items-center">
-                                <div class="col-2">
-                                    <img src="~/@item.Product.ImagePath" alt="@item.Product.Name" width="50" height="50" class="me-2">
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="me-3">
+                                    <img src="~/@item.Product.ImagePath" alt="@item.Product.Name" width="50" height="50">
                                 </div>
-                                <div class="col-10">
-                                    @item.Product.Name (x @item.Quantity) (Rs.@item.Price)
+                                <div>
+                                    <h6 class="mb-0">@item.Product.Name</h6>
+                                </div>
+                                <div>
+                                    <span class="badge bg-primary">x @item.Quantity</span>
+                                    <span class="badge bg-secondary">Rs.@item.Price</span>
+                                    <span class="badge bg-info ms-2">Rs.@(item.Price*item.Quantity)</span>
                                 </div>
                             </div>
-                        </li>
+                        </div>
                     }
-                </ul>
-                <p><strong>Shipping Address:</strong></p>
-                <p>@Model.ShipAddress.Address</p>
-                <p><strong>Payment Method:</strong></p>
-                <p>@Model.CheckOut.PaymentMethod</p>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6 ">
+                        <h5>Shipping Address</h5>
+                        <p>@Model.CheckOut.Address</p>
+                        <h5>Payment Method</h5>
+                        <p>@Model.CheckOut.PaymentMethod</p>
+                    </div>
+
+                    <div class="col-md-6 text-md-end">
+                        <h5>Total Amount</h5>
+                        <p>Rs.@Model.TotalBill</p>
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>
@@ -37,8 +60,13 @@
     <div class="col-12 col-lg-4">
         <div class="card mb-3">
             <div class="card-body">
-                <h2>Order Timeline</h2>
-                <p><strong>Order Placed:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</p>
+                <h2 class="mb-4">Order Timeline</h2>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Order Placed:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")
+                    </li>
+                    <!-- Add more timeline events here if needed -->
+                </ul>
             </div>
         </div>
     </div>

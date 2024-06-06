@@ -44,16 +44,12 @@ namespace Ecommerce.Controllers
                         {
                             OrderDeliveryDate = DateTime.Today.AddDays(1),
                             PaymentMethod = "Cash on Delivery",
+                            Address = odrs.Address,
+                            City = odrs.City ?? "",
+                            ZipCode = odrs.ZipCode,
+                            State = odrs.State ?? "",
                         },
                         //PaymentStatus = "Pending",
-                        ShipAddress = new ShipAddress
-                        {
-                            Address = "Samanabad Lahore Pakistan",
-                            City = "Lahore",
-                            Country = "Pakistan",
-                            ZipCode = "7777",
-                            State = "Punjab",
-                        },
                         OrderDetails = cart.Items.Select(x => new OrderDetail
                         {
                             ProductId = x.Id,
@@ -167,6 +163,7 @@ namespace Ecommerce.Controllers
             {
                 orders = orders.Where(x => x.Status == statusFilter).ToList();
             }
+            else orders = orders.Where(x => x.Status != "Cancelled").ToList();
             if (startDate.HasValue && endDate.HasValue)
             {
                 orders = orders.Where(x => x.OrderDate >= startDate && x.OrderDate <= endDate).ToList();

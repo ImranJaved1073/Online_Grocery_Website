@@ -125,6 +125,7 @@ namespace Ecommerce.Controllers
             return RedirectToAction("Cart");
         }
 
+
         [Authorize]
         public IActionResult CheckOut()
         {

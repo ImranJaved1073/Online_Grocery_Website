@@ -24,187 +24,114 @@
     <section class="mb-8 mt-8">
         <div class="container">
             <!-- row -->
-            <div class="row">
-                <!-- col -->
-                <div class="col-12">
-                    <div class="mb-8">
-                        <!-- text -->
-                        <h1 class="fw-bold mb-0">Checkout</h1>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <!-- row -->
-                <form action="/Order/AddOrder" method="post">
-                    <div class="row">
-                        <div class="col-xl-6 col-lg-5 col-md-12 mt-5">
-                            <!-- accordion -->
-                            <div class="accordion accordion-flush" id="accordionFlushExample">
-                                <!-- accordion item -->
-                                <div class="accordion-item py-4">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <!-- heading one -->
-                                        <a href="#" class="fs-5 text-inherit collapsed h4" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="true" aria-controls="flush-collapseOne">
-                                            <i class="feather-icon icon-map-pin me-2 text-muted"></i>
-                                            Add delivery address
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- accordion item -->
-                                <div class="accordion-item py-4">
-                                    <a href="#" class="text-inherit collapsed h5" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                                        <i class="feather-icon icon-clock me-2 text-muted"></i>
-                                        Delivery time
-                                    </a>
-                                    <!-- collapse -->
-                                    <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                                        <!-- nav -->
-                                        <ul class="nav nav-pills nav-pills-light mb-3 nav-fill mt-5" id="pills-tab" role="tablist">
-                                            @foreach (var day in ViewBag.Days)
-                                            {
-                                                <li class="nav-item" role="presentation">
-                                                    <!-- button -->
-                                                    <button asp-for="OrderDeliveryDate" class="nav-link @(day.IsSelected ? "active" : "")" id="@("pills-" + day.Name + "-tab")" data-bs-toggle="pill" data-bs-target="#pills-@day.Name" type="button" role="tab" aria-controls="pills-@day.Name" aria-selected="@(day.IsSelected ? "true" : "false")">
-                                                        @day.Name
-                                                        <br />
-                                                        @if (day.Date.Date == DateTime.Today)
-                                                        {
-                                                            <input asp-for="OrderDeliveryDate" value="@DateTime.Today" hidden></input>
-                                                            <small>Today</small>
-                                                        }
-                                                        else
-                                                        {
-                                                            <input asp-for="OrderDeliveryDate" value="@day.Date" hidden></input>
-                                                            <small>@day.Date.ToString("dd MMM")</small>
-                                                        }
-                                                    </button>
-                                                </li>
-                                            }
-                                        </ul>
-                                        <!-- tab content -->
-                                        <div class="tab-content" id="pills-tabContent">
-                                            @foreach (var day in ViewBag.Days)
-                                            {
-                                                <div class="tab-pane fade @(day.IsSelected ? "show active" : "")" id="pills-@day.Name" role="tabpanel" aria-labelledby="pills-@day.Name-tab" tabindex="0">
-                                                    <ul class="list-group list-group-flush mt-4">
-                                                        @foreach (var timeSlot in day.TimeSlots)
-                                                        {
-                                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                                                                <!-- col -->
-                                                                <div class="col-4">
-                                                                    <div class="form-check">
-                                                                        <!-- form check input -->
-                                                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="@("flexRadioDefault" + timeSlot.Id)" />
-                                                                        <!-- label -->
-                                                                        <label class="form-check-label" for="@("flexRadioDefault" + timeSlot.Id)">
-                                                                            @timeSlot.Name
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- price -->
-                                                                <div class="col-3 text-center">$@timeSlot.Price</div>
-                                                                <!-- badge -->
-                                                                <div class="col-3 text-center"><span class="badge @(timeSlot.IsFree ? "bg-success" : "bg-danger")">@(timeSlot.IsFree ? "Free" : "Paid")</span></div>
-                                                                <!-- col -->
-                                                                <div class="col-2 text-end"><a href="#" class="btn btn-outline-gray-400 btn-sm text-muted">Choose</a></div>
-                                                            </li>
-                                                        }
-                                                    </ul>
-                                                </div>
-                                            }
+            <form asp-action="AddOrder" asp-controller="Order" method="post">
+               <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row gx-5">
+                    <div class="col-lg-7">
+                        <!-- checkout form -->
+
+                        <div class="card py-1 border-0 mb-8 shadow-sm rounded">
+                            <div class="card-body">
+                                <h5 class="fw-bold">Checkout Form</h5>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label for="name">Full Name</label>
+                                            <input type="text" class="form-control" id="name" placeholder="Enter your full name">
                                         </div>
                                     </div>
-                                </div>
-                                <div class="accordion-item py-4">
-                                    <a href="#" class="text-inherit h5" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
-                                        <i class="feather-icon icon-credit-card me-2 text-muted"></i>
-                                        Payment Method
-                                    </a>
-                                    <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                                        <div class="mt-5">
-                                            <div>
-                                                <div class="card card-bordered shadow-none">
-                                                    <div class="card-body p-6">
-                                                        <!-- check input -->
-                                                        <div class="d-flex">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="cashonDelivery" />
-                                                                <label class="form-check-label ms-2" for="cashonDelivery"></label>
-                                                            </div>
-                                                            <div>
-                                                                <!-- title -->
-                                                                <h5 class="mb-1 h6"><label asp-for="PaymentMethod">Cash on Delivery</label></h5>
-                                                                <p class="mb-0 small">Pay with cash when your order is delivered.</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- Button -->
-                                                <div class="mt-5 d-flex justify-content-end">
-                                                    <a href="#" class="btn btn-outline-gray-400 text-muted" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-                                                        Prev
-                                                    </a>
-                                                    <a href="#" class="btn btn-primary ms-2">Place Order</a>
-                                                </div>
-                                            </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label for="email">Email Address</label>
+                                            <input type="email" class="form-control" id="email" placeholder="Enter your email address">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label asp-for="Address" for="address">Address</label>
+                                            <textarea asp-for="Address" class="form-control" id="address" placeholder="Enter your address" required></textarea>
+                                            <span asp-validation-for="Address" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label for="phone">Phone Number</label>
+                                            <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label asp-for="City" for="city">City</label>
+                                            <input asp-for="City" type="text" class="form-control" id="city" placeholder="Enter your city">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label asp-for="State" for="state">State</label>
+                                            <input asp-for="State" type="text" class="form-control" id="state" placeholder="Enter your state">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label asp-for="ZipCode" for="zip">Zip Code</label>
+                                            <input asp-for="ZipCode" type="text" class="form-control" id="zip" placeholder="Enter your zip code" required>
+                                            <span asp-validation-for="ZipCode" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-md-12 offset-xl-1 col-xl-5 col-lg-6">
-                            <div class="mt-4 mt-lg-0">
-                                <div class="card shadow-sm">
-                                    <h5 class="px-6 py-4 bg-transparent mb-0">Order Details</h5>
-                                    <ul class="list-group list-group-flush">
-                                        <!-- list group item -->
-                                        @foreach (var item in ViewBag.Cart.Items)
-                                        {
-                                            <li class="list-group-item px-4 py-3">
-                                                <div class="row align-items-center">
-                                                    <div class="col-2 col-md-2">
-                                                        <img src="~/@item.ImagePath" alt="Ecommerce" class="img-fluid" />
-                                                    </div>
-                                                    <div class="col-5 col-md-5">
-                                                        <h6 class="mb-0">@item.Name</h6>
-                                                        <span><small class="text-muted">@item.Weight@item.Unit</small></span>
-                                                    </div>
-                                                    <div class="col-2 col-md-2 text-center text-muted">
-                                                        <span>@item.Quantity</span>
-                                                    </div>
-                                                    <div class="col-3 text-lg-end text-start text-md-end col-md-3">
-                                                        <span class="fw-bold">Rs.@item.Price</span>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        }
-                                        <!-- list group item -->
-                                        <li class="list-group-item px-4 py-3">
-                                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                                <div>Item Subtotal</div>
-                                                <div class="fw-bold">Rs.@ViewBag.Cart.TotalPrice</div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="card shadow-sm">
+                            <h5 class="px-6 py-4 bg-transparent mb-0">Order Details</h5>
+                            <ul class="list-group list-group-flush">
+                                <!-- list group item -->
+                                @foreach (var item in ViewBag.Cart.Items)
+                                {
+                                    <li class="list-group-item px-4 py-3">
+                                        <div class="row align-items-center">
+                                            <div class="col-2 col-md-2">
+                                                <img src="~/@item.ImagePath" alt="Ecommerce" class="img-fluid" />
                                             </div>
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <div>Service Fee</div>
-                                                <div class="fw-bold">Rs.0.00</div>
+                                            <div class="col-5 col-md-5">
+                                                <h6 class="mb-0">@item.Name</h6>
+                                                <span><small class="text-muted">@item.Weight@item.Unit</small></span>
                                             </div>
-                                        </li>
-                                        <!-- list group item -->
-                                        <li class="list-group-item px-4 py-3">
-                                            <div class="d-flex align-items-center justify-content-between fw-bold">
-                                                <div>Subtotal</div>
-                                                <div>Rs.@ViewBag.Cart.TotalPrice</div>
+                                            <div class="col-2 col-md-2 text-center text-muted">
+                                                <span>@item.Quantity</span>
                                             </div>
-                                        </li>
-                                    </ul>
-                                    <button type="submit" class="btn btn-primary w-100" style="border-top-left-radius: 0;border-top-right-radius:0">Confirm Order</button>
-                                </div>
-                            </div>
+                                            <div class="col-3 text-lg-end text-start text-md-end col-md-3">
+                                                <span class="fw-bold">Rs.@item.Price</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                                <!-- list group item -->
+                                <li class="list-group-item px-4 py-3">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div>Item Subtotal</div>
+                                        <div class="fw-bold">Rs.@ViewBag.Cart.TotalPrice</div>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>Service Fee</div>
+                                        <div class="fw-bold">Rs.0.00</div>
+                                    </div>
+                                </li>
+                                <!-- list group item -->
+                                <li class="list-group-item px-4 py-3">
+                                    <div class="d-flex align-items-center justify-content-between fw-bold">
+                                        <div>Subtotal</div>
+                                        <div>Rs.@ViewBag.Cart.TotalPrice</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <button type="submit" class="btn btn-primary w-100" style="border-top-left-radius: 0;border-top-right-radius:0">Confirm Order</button>
                         </div>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </section>
 </main>
@@ -214,4 +141,9 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/simplebar/dist/simplebar.min.js"></script>
     <script src="~/js/theme.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 }
+
+
+

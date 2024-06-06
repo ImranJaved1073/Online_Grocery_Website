@@ -101,8 +101,8 @@
                             <div class="d-md-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
-                                        <a asp-action="ShopItems" asp-route-view="@("list")" class="text-muted me-3"><i class="bi bi-list-ul"></i></a>
-                                        <a asp-action="ShopItems" asp-route-view="@("grid")" class="me-3 text-muted"><i class="bi bi-grid"></i></a>
+                                        <a onclick="list()" id="blist"  class="text-muted me-3"><i class="bi bi-list-ul"></i></a>
+                                        <a onclick="grid()" id="bgrid"  class="me-3 text-muted"><i class="bi bi-grid"></i></a>
                                     </div>
                                 </div>
 
@@ -134,42 +134,28 @@
                         <!-- row -->
                         @* genrate conditions for partial views according to buttons of grid and list *@
 
-                        @if (ViewBag.View == "list")
+                        @if (Model.Count == 0)
                         {
-                            @if (Model.Count == 0)
-                            {
-                                <div class="col">
-                                    <div class="alert alert-danger" role="alert">
-                                        No products found.
-                                    </div>
+                            <div class="col">
+                                <div class="alert alert-danger" role="alert">
+                                    No products found.
                                 </div>
-                            }
-                            else
-                            {
-                                <partial name="_ProductsList" />
-                            }
+                            </div>
                         }
                         else
                         {
-                        <div class="row g-4 row-cols-xl-3 row-cols-lg-3 row-cols-2 row-cols-md-2 mt-2">
-                            <!-- col -->
-                            @if (Model.Count == 0)
-                            {
-                                <div class="col">
-                                    <div class="alert alert-danger" role="alert">
-                                        No products found.
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                <partial name="_ProductsGrid" model="Model" />
-                            }
+                            <div id="plist" class=" d-none">
+                                <partial name="_ProductsList" />
+                            </div>
+                            <div id="pgrid" class="row g-4 row-cols-xl-3 row-cols-lg-3 row-cols-2 row-cols-md-2 mt-2">
 
-                        </div>
+                                <partial name="_ProductsGrid" model="Model" />
+
+                            </div>
                         }
-                        
-                        
+
+
+
                         <!-- row -->
                         <div class="row mt-8">
                             <div class="col">
@@ -199,6 +185,23 @@
     <script src="~/lib/tiny-slider/dist/min/tiny-slider.js"></script>
     <script src="~/js/vendors/tns-slider.js"></script>
     <script src="~/js/vendors/zoom.js"></script>
+    <script>
+
+        function grid() {
+            const listElement = document.getElementById('plist');
+            const gridElement = document.getElementById('pgrid');
+            listElement.classList.add('d-none');
+            gridElement.classList.remove('d-none');
+        }
+
+        function list() {
+            const listElement = document.getElementById('plist');
+            const gridElement = document.getElementById('pgrid');
+            listElement.classList.remove('d-none');
+            gridElement.classList.add('d-none');
+        }
+
+    </script>
 }
 
 

@@ -88,6 +88,16 @@ namespace Ecommerce.Controllers
             return View(product);
         }
 
+        public IActionResult About()
+        {
+            return View();
+        }
+
+        public IActionResult ContactUS()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

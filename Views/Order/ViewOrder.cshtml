@@ -119,10 +119,12 @@
                     <div class="row mt-3">
                         <div class="col-12">
                             <div class="btn-group">
-                                <button class="btn btn-primary">View</button>
-                                <button class="btn btn-secondary">Edit</button>
-                                <a asp-action="OrderStatusUpdate" asp-controller="Order" asp-route-status=@("Cancelled") asp-route-id="@ViewBag.Order.Id" class="btn btn-danger">Delete</a>
-                                <a asp-action="OrderStatusUpdate" asp-controller="Order" asp-route-status=@("Processing") asp-route-id="@ViewBag.Order.Id" class="btn btn-success">Mark as Delivered</a>
+                                <a asp-action="OrderStatusUpdate" asp-controller="Order" asp-route-status="@("Cancelled")" asp-route-id="@ViewBag.Order.Id" class="btn btn-danger">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                                <a asp-action="OrderStatusUpdate" asp-controller="Order" asp-route-status="@("Processing")" asp-route-id="@ViewBag.Order.Id" class="btn btn-success">
+                                    <i class="bi bi-check"></i> Mark as Delivered
+                                </a>
                             </div>
                         </div>
                     </div>
