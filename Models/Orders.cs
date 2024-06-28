@@ -17,7 +17,20 @@ namespace Ecommerce.Models
 
         public decimal TotalBill { get; set; }
         //public decimal TotalDiscount { get; set; }
+        [NotMapped]
         public CheckOut CheckOut { get; set; }
+        public DateTime OrderDeliveryDate { get; set; }
+        public string PaymentMethod { get; set; }
+
+        [Required]
+        public string Address { get; set; }
+
+        public string City { get; set; }
+
+        public string State { get; set; }
+
+        [Required]
+        public string ZipCode { get; set; }
         //public string PaymentStatus { get; set; }
 
         [NotMapped]

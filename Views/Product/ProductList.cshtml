@@ -75,119 +75,88 @@
                 </div>
             </div>
         </div>
-        <!-- row -->
-        <div class="row">
-            <div class="col-xl-12 col-12 mb-5">
-                <!-- card -->
-                <div class="card h-100 card-lg">
-                    <div class="px-6 py-6 bg-tertiary-subtle border rounded-top">
-                        <div class="row justify-content-between">
-                            <!-- form -->
-                            <div class="col-lg-4 col-md-6 col-12 mb-2 mb-lg-0">
-                                @using (Html.BeginForm("ProductList", "Product", FormMethod.Get, new { @class = "d-flex" }))
-                                {
-                                    <div class="input-group">
-                                        @Html.TextBox("search", null, new { @class = "form-control", placeholder = "Search Products" })
-                                        <button type="submit" class="btn btn-primary">Search</button>
-                                    </div>
-                                }
 
-
-                            </div>
-                            <!-- select option -->
-                            <div class="col-lg-2 col-md-4 col-12">
-                                <select class="form-select">
-                                    <option selected>Status</option>
-                                    <option value="1">Active</option>
-                                    <option value="2">Deactive</option>
-                                    <option value="3">Draft</option>
-                                </select>
-                            </div>
+        <div class="px-6 py-6 bg-tertiary-subtle border rounded">
+            <div class="row justify-content-between">
+                <!-- form -->
+                <div class="col-lg-4 col-md-6 col-12 mb-2 mb-lg-0">
+                    @using (Html.BeginForm("ProductList", "Product", FormMethod.Get, new { @class = "d-flex" }))
+                    {
+                        <div class="input-group">
+                            @Html.TextBox("search", null, new { @class = "form-control", placeholder = "Search Products" })
+                            <button type="submit" class="btn btn-primary">Search</button>
                         </div>
-                    </div>
-                    <!-- card body -->
-                    <div class="card-body p-0">
-                        <!-- table -->
-                        <div class="table-responsive">
-                            <table class="table table-centered table-hover table-bordered table-striped mb-0 table-with-checkbox">
-                                <thead class="border border-success bg-success-subtle">
-                                    <tr>
-                                        <th>Sr#</th>
-                                        <th class="text-center">Image</th>
-                                        <th class="text-center">Name</th>
-                                        <th class="text-center">Category</th>
-                                        <th class="text-center">Brand</th>
-                                        <th class="text-center">Status</th>
-                                        <th class="text-center">Price</th>
-                                        <th class="text-center">Created at</th>
-                                        <th class="text-center">Updated at</th>
-                                        <th class="text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (Model.Count() == 0)
+                    }
+
+                </div>
+                <!-- select option -->
+                <div class="col-lg-2 col-md-4 col-12">
+                    <select class="form-select">
+                        <option selected>Status</option>
+                        <option value="1">Active</option>
+                        <option value="2">Deactive</option>
+                        <option value="3">Draft</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5 g-4 py-5">
+            @if (Model.Count() == 0)
+            {
+                <div class="col-12 text-center">
+                    <p>No products found!!</p>
+                </div>
+            }
+            else
+            {
+                int i = 1;
+                foreach (var product in Model)
+                {
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h3 class="mt-2 border rounded bg-success text-white pt-1 pb-1 fs-5">
+                                    Rs.@product.SalePrice
+                                </h3>
+                                <img src="~/@product.ImagePath" class="container col-12 mt-3" alt="@product.Name" />
+                                <h4 class="card-title">@product.Name</h4>
+                                <p class="card-text">@product.CategoryName</p>
+                                <p class="card-text">@product.BrandName</p>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-sm btn-outline-warning me-1">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="AddProduct" asp-route-id="@product.Id" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a onclick="confirmDelete(@product.Id)" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                                <div class="mt-3">
+                                    @if (product.Quantity > 10)
                                     {
-                                        <tr>
-                                            <td colspan="12" class="text-center">No products found!!</td>
-                                        </tr>
+                                        <span class="badge bg-success">In Stock: @product.Quantity</span>
+                                    }
+                                    else if (product.Quantity > 0 && product.Quantity <= 10)
+                                    {
+                                        <span class="badge bg-warning">Low Stock: @product.Quantity</span>
                                     }
                                     else
                                     {
-                                        int i = 1;
-                                        foreach (var product in Model)
-                                        {
-                                            <tr class="text-center">
-                                                <td>@i</td>
-                                                @{
-                                                    i += 1;
-                                                }
-                                                <td>
-                                                    <img src="~/@product.ImagePath" alt="" class="icon-shape icon-md" />
-                                                </td>
-                                                <td class="fs-6 fw-light"><a href="#" class="text-reset">@product.Name</a></td>
-                                                <td class="fs-6 fw-light">@product.CategoryName</td>
-                                                <td class="fs-6 fw-light">@product.BrandName</td>
-                                                <td>
-                                                    @if (product.Quantity > 10)
-                                                    {
-                                                        <span class="badge bg-success">@product.Quantity</span>
-                                                    }
-                                                    else if (product.Quantity > 0 && product.Quantity <= 10)
-                                                    {
-                                                        <span class="badge bg-warning">@product.Quantity</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-danger">Out of Stock</span>
-                                                    }
-                                                </td>
-                                                <td class="font-monospace fw-lighter">@product.SalePrice</td>
-                                                <td class="font-monospace fw-lighter">@product.CreatedAt.ToString("dd-MM-yy")</td>
-                                                <td class="font-monospace fw-lighter">@product.UpdatedAt.ToString("dd-MM-yy")</td>
-                                                <td>
-                                                    <div class="d-flex">
-                                                        <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-sm btn-outline-warning me-1">
-                                                            <i class="bi bi-info-circle"></i>
-                                                        </a>
-                                                        <a asp-action="AddProduct" asp-route-id="@product.Id" class="btn btn-sm btn-outline-primary me-1">
-                                                            <i class="bi bi-pencil-square"></i>
-                                                        </a>
-                                                        <a onclick="confirmDelete(@product.Id)" class="btn btn-sm btn-outline-danger">
-                                                            <i class="bi bi-trash"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        }
+                                        <span class="badge bg-danger">Out of Stock</span>
                                     }
-                                </tbody>
-                            </table>
+                                </div>
+                            </div>
                         </div>
-
                     </div>
-                    <partial name="_Pagination" model="ViewBag.Pager" />
-                </div>
-            </div>
+                    i++;
+                }
+            }
+        </div>
+        <div class="border rounded mb-4">
+            <partial name="_Pagination" model="ViewBag.Pager" />
         </div>
     </main>
 

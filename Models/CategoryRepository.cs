@@ -5,8 +5,8 @@ namespace Ecommerce.Models
 {
     public class CategoryRepository : GenericRepository<Category>
     {
-        private readonly string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True";
-        public CategoryRepository() : base(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True")
+        private readonly string connectionString = @"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True";
+        public CategoryRepository() : base(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True")
         {
         }
 

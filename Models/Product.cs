@@ -61,7 +61,7 @@ namespace Ecommerce.Models
 
         public string GetUnitName(int id)
         {
-            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
             UnitName = unitRepository.Get(id).Name;
             return UnitName;
         }

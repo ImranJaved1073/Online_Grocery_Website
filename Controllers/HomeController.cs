@@ -19,7 +19,7 @@ namespace Ecommerce.Controllers
             CategoryRepository _categoryRepository = new CategoryRepository();
             List<Category> nonparents = _categoryRepository.GetNonParentCategories();
             List<Product> products = new List<Product>();
-            IRepository<Product> productRepository = new GenericRepository<Product>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            IRepository<Product> productRepository = new GenericRepository<Product>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
             products = productRepository.Get().ToList();
             //getting top 10 products in last 7 days 
             products = products.OrderByDescending(p => p.CreatedAt > DateTime.Now.AddDays(-7)).Take(10).ToList();
@@ -45,14 +45,14 @@ namespace Ecommerce.Controllers
             {
                 ProductRepository _productRepository = new ProductRepository();
                 products = _productRepository.GetProductsByCategory((int)id);
-                IRepository<Category> rep = new GenericRepository<Category>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+                IRepository<Category> rep = new GenericRepository<Category>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
                 string name = rep.Get((int)id).CategoryName;
                 if (name != null)
                     TempData["CategoryName"] = name;
             }
             else
             {
-                IRepository<Product> productRepository = new GenericRepository<Product>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+                IRepository<Product> productRepository = new GenericRepository<Product>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
                 products = productRepository.Get().ToList();
             }
             ViewBag.Categories = subCategoryViewModels;

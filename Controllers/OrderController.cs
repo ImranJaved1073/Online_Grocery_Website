@@ -63,7 +63,7 @@ namespace Ecommerce.Controllers
                     OrderRepository oR = new OrderRepository();
                     oR.Add(order);
 
-                    IRepository<OrderDetail> oDR = new GenericRepository<OrderDetail>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+                    IRepository<OrderDetail> oDR = new GenericRepository<OrderDetail>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
                     foreach (var item in order.OrderDetails)
                     {
                         item.OrderId = oR.Get(order.OrderNum).Id;
@@ -105,7 +105,7 @@ namespace Ecommerce.Controllers
         public IActionResult OrderDetails(int id)
         {
             OrderRepository oR = new OrderRepository();
-            IRepository<OrderDetail> oDR = new GenericRepository<OrderDetail>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            IRepository<OrderDetail> oDR = new GenericRepository<OrderDetail>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
             List<Orders> orders = oR.Get();
             Orders? order = orders.Where(x => x.Id == id).FirstOrDefault();
             order.OrderDetails = oDR.Get().Where(x => x.OrderId == id).ToList();
@@ -184,7 +184,7 @@ namespace Ecommerce.Controllers
 
             if (id.HasValue)
             {
-                IRepository<OrderDetail> oDR = new GenericRepository<OrderDetail>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+                IRepository<OrderDetail> oDR = new GenericRepository<OrderDetail>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
                 ProductRepository pR = new ProductRepository();
                 var order = orders.FirstOrDefault(x => x.Id == id.Value);
                 if (order != null)

@@ -24,7 +24,7 @@ namespace Ecommerce.Controllers
         {
             ProductRepository productsRepository = new ProductRepository();
             CategoryRepository categoryRepository = new();
-            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
             List<Product> products = new();
             Category category = new();
             Brand brand = new();
@@ -75,8 +75,8 @@ namespace Ecommerce.Controllers
             }
 
             CategoryRepository categoryRepository = new CategoryRepository();
-            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
-            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
+            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
 
             product.CategoryName = categoryRepository.Get(product.CategoryID).CategoryName;
             product.BrandName = brandRepository.Get(product.BrandID).BrandName;
@@ -114,10 +114,10 @@ namespace Ecommerce.Controllers
             CategoryRepository categoryRepository = new CategoryRepository();
             List<Category> categories = categoryRepository.GetNonParentCategories().ToList();
 
-            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
             List<Brand> brands = brandRepository.Get().ToList();
 
-            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=newDb;Integrated Security=True;Trust Server Certificate=True");
+            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
             List<Unit> units = unitRepository.Get().ToList();
 
             addProduct.Categories = new SelectList(categories, "Id", "CategoryName");
