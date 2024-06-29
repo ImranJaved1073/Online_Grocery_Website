@@ -10,23 +10,22 @@
         transition: all 0.3s ease-in-out;
     }
 
-    .card:hover {
+        .card:hover {
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             background-color: #f8f9fa;
-     }
+        }
 
     .btn-primary {
         transition: all 0.3s ease-in-out;
         background-color: #088a08;
         border-color: #088a08;
-        
     }
 
-    .btn-primary:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
             background-color: #0aad0a;
             border-color: #0aad0a;
-     }
+        }
 
     .form-control:focus {
         border-color: #80bdff;
@@ -39,12 +38,13 @@
     }
 
 
-    .input-group:hover .btn-success:hover {
+        .input-group:hover .btn-success:hover {
             background-color: #218838;
             border-color: #1e7e34;
-    }
-    #productSKU{
-        font-weight:bold;
+        }
+
+    #productSKU {
+        font-weight: bold;
     }
 
 </style>
@@ -53,27 +53,45 @@
 <body>
 
     <main class="main-wrapper">
-    <div class="container">
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="d-md-flex justify-content-between align-items-center">
-                    <div>
-                        <h2>Add New Category</h2>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Dashboard</a></li>
-                                <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Category</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Add New Category</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="@Url.Action("List", "Category")" class="btn btn-light">Back to List</a>
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="d-md-flex justify-content-between align-items-center">
+                        <div>
+                            @if (Model != null)
+                            {
+                                <h2>Edit Category</h2>
+                            }
+                            else
+                            {
+                                <h2>Add New Category</h2>
+                            }
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Dashboard</a></li>
+                                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Category</a></li>
+                                    @if (Model != null)
+                                    {
+                                        <li class="breadcrumb-item active" aria-current="page">Edit Category</li>
+                                    }
+                                    else
+                                    {
+                                        <li class="breadcrumb-item active" aria-current="page">Add New Category</li>
+                                    }
+                                </ol>
+                            </nav>
+                        </div>
+                        <div>
+                            <a href="@Url.Action("List", "Category")" class="btn btn-light">Back to List</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-            <form method="post" action="/Category/Create" enctype="multipart/form-data">
+            <form method="post" asp-action="@(Model == null ? "Create" : "Edit")" enctype="multipart/form-data">
+                @if (Model != null)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="card mb-4">
@@ -121,20 +139,25 @@
                             </div>
                             <!-- input -->
                             <div class="d-grid mt-3">
-                                <button type="submit" class="btn btn-primary">Add</button>
+                                @if(Model != null)
+                                {
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary">Create</button>
+                                }
                             </div>
                         </div>
                     </div>
                 </div>
             </form>
-    </div>
-</main>
+        </div>
+    </main>
 
 
     <!-- main -->
-    
-
-   @*  <!-- Libs JS -->
+    @*  <!-- Libs JS -->
     <!-- <script src="~/libs/jquery/dist/jquery.min.js"></script> -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/simplebar/dist/simplebar.min.js"></script>

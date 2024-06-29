@@ -54,12 +54,12 @@ namespace Ecommerce.Controllers
 
         }
 
-        public IActionResult Create()
+        public IActionResult Create(int id)
         {
             CategoryRepository categoryRepository = new CategoryRepository();
             List<Category> categories = categoryRepository.GetNames().ToList();
             ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
-            return View();
+            return View(categoryRepository.Get(id));
         }
 
         [HttpPost]
@@ -100,13 +100,13 @@ namespace Ecommerce.Controllers
             return RedirectToAction("List", "Category");
         }
 
-        public IActionResult Edit(int id)
-        {
-            CategoryRepository categoryRepository = new CategoryRepository();
-            List<Category> categories = categoryRepository.GetNames().ToList();
-            ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
-            return View(categoryRepository.Get(id));
-        }
+        //public IActionResult Edit(int id)
+        //{
+        //    CategoryRepository categoryRepository = new CategoryRepository();
+        //    List<Category> categories = categoryRepository.GetNames().ToList();
+        //    ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
+        //    return View(categoryRepository.Get(id));
+        //}
 
         [HttpPost]
 

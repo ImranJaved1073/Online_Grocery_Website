@@ -58,23 +58,29 @@ namespace Ecommerce.Models
                     {
                         foreach (var subProp in prop.PropertyType.GetProperties().Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null))
                         {
-                            var columnName = subProp.Name;
-                            var parameterName = $"@{prop.Name}_{subProp.Name}";
-                            columnNames.Add(columnName);
-                            parameterNames.Add(parameterName);
-                            var value = subProp.GetValue(complexValue) ?? DBNull.Value;
-                            parameters.Add(parameterName, value);
+                            var value = subProp.GetValue(complexValue);
+                            if (value != null)
+                            {
+                                var columnName = subProp.Name;
+                                var parameterName = $"@{prop.Name}_{subProp.Name}";
+                                columnNames.Add(columnName);
+                                parameterNames.Add(parameterName);
+                                parameters.Add(parameterName, value);
+                            }
                         }
                     }
                 }
                 else
                 {
-                    var columnName = prop.Name;
-                    var parameterName = $"@{prop.Name}";
-                    columnNames.Add(columnName);
-                    parameterNames.Add(parameterName);
-                    var value = prop.GetValue(entity) ?? DBNull.Value;
-                    parameters.Add(parameterName, value);
+                    var value = prop.GetValue(entity);
+                    if (value != null)
+                    {
+                        var columnName = prop.Name;
+                        var parameterName = $"@{prop.Name}";
+                        columnNames.Add(columnName);
+                        parameterNames.Add(parameterName);
+                        parameters.Add(parameterName, value);
+                    }
                 }
             }
 
@@ -129,7 +135,7 @@ namespace Ecommerce.Models
                 connection.Execute(query, new { Id = id });
             }
         }
-        
+
 
         virtual public TEntity Get(int id)
         {
