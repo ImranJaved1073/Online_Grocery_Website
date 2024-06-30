@@ -7,28 +7,29 @@ namespace Ecommerce.Controllers
     public class CategoryController : Controller
     {
         private readonly IWebHostEnvironment _env;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IProductRepository _productRepository;
 
-        public CategoryController(IWebHostEnvironment env)
+        public CategoryController(IWebHostEnvironment env, ICategoryRepository categoryRepository, IProductRepository productRepository)
         {
             _env = env;
+            _categoryRepository = categoryRepository;
+            _productRepository = productRepository;
         }
         public IActionResult List(string search, int pageNumber)
         {
-            CategoryRepository categoryRepository = new CategoryRepository();
             List<Category> categories = new();
             if (!string.IsNullOrEmpty(search))
             {
-                categories = categoryRepository.Search(search).ToList();
+                categories = _categoryRepository.Search(search).ToList();
             }
             else
             {
-                categories = categoryRepository.GetParents().ToList();
+                categories = _categoryRepository.GetParents().ToList();
             }
             foreach (var category in categories)
             {
-                //count products in each category
-                ProductRepository productRepository = new ProductRepository();
-                category.ProductCount = productRepository.GetProductsByCategory(category.Id).Count();
+                category.ProductCount = _productRepository.GetProductsByCategory(category.Id).Count();
             }
             const int pageSize = 5;
             //int excludeRecords = (pageSize * pageNumer) - pageSize;
@@ -56,10 +57,9 @@ namespace Ecommerce.Controllers
 
         public IActionResult Create(int id)
         {
-            CategoryRepository categoryRepository = new CategoryRepository();
-            List<Category> categories = categoryRepository.GetNames().ToList();
+            List<Category> categories = _categoryRepository.GetNames().ToList();
             ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
-            return View(categoryRepository.Get(id));
+            return View(_categoryRepository.Get(id));
         }
 
         [HttpPost]
@@ -67,8 +67,7 @@ namespace Ecommerce.Controllers
         {
             if (c.CategoryImg != null)
                 c.ImgPath = GetPath(c.CategoryImg);
-            CategoryRepository categoryRepository = new CategoryRepository();
-            categoryRepository.Add(c);
+            _categoryRepository.Add(c);
             return RedirectToAction("List", "Category");
         }
 
@@ -94,9 +93,8 @@ namespace Ecommerce.Controllers
 
         public IActionResult Delete(int id)
         {
-            CategoryRepository categoryRepository = new CategoryRepository();
             //Category c = categoryRepository.Get(id);
-            categoryRepository.Delete(id);
+            _categoryRepository.Delete(id);
             return RedirectToAction("List", "Category");
         }
 
@@ -114,8 +112,7 @@ namespace Ecommerce.Controllers
         {
             if (c.CategoryImg != null)
                 c.ImgPath = GetPath(c.CategoryImg);
-            CategoryRepository categoryRepository = new CategoryRepository();
-            categoryRepository.Update(c);
+            _categoryRepository.Update(c);
             return RedirectToAction("List", "Category");
         }
     }

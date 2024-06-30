@@ -11,12 +11,22 @@ namespace Ecommerce.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ILogger<OrderController> _logger;
+        private readonly IProductRepository _productRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IRepository<OrderDetail> _orderDetailRepository;
 
-        public OrderController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public OrderController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
+            IOrderRepository orderRepository, IRepository<OrderDetail> orderDetailRepository, ILogger<OrderController> logger, IProductRepository productRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _orderRepository = orderRepository;
+            _orderDetailRepository = orderDetailRepository;
+            _logger = logger;
+            _productRepository = productRepository;
         }
+
         public IActionResult Index()
         {
             return View();
@@ -60,14 +70,12 @@ namespace Ecommerce.Controllers
                         }).ToList()
                     };
 
-                    OrderRepository oR = new OrderRepository();
-                    oR.Add(order);
+                    _orderRepository.Add(order);
 
-                    IRepository<OrderDetail> oDR = new GenericRepository<OrderDetail>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
                     foreach (var item in order.OrderDetails)
                     {
-                        item.OrderId = oR.Get(order.OrderNum).Id;
-                        oDR.Add(item);
+                        item.OrderId = _orderRepository.Get(order.OrderNum).Id;
+                        _orderDetailRepository.Add(item);
                     }
 
                     CookieHelper.ClearCartCookies(HttpContext, user.Id);
@@ -81,8 +89,7 @@ namespace Ecommerce.Controllers
         public IActionResult Order(string statusFilter, DateTime? startDate, DateTime? endDate)
         {
             var user = _userManager.GetUserAsync(User).Result;
-            OrderRepository oR = new OrderRepository();
-            var orders = oR.Get();
+            var orders = _orderRepository.Get();
             var status = orders.Select(o => o.Status).Distinct().ToList();
             ViewBag.StatusOptions = status;
             orders = orders.Where(x => x.UserId == user.Id).ToList();
@@ -104,15 +111,13 @@ namespace Ecommerce.Controllers
 
         public IActionResult OrderDetails(int id)
         {
-            OrderRepository oR = new OrderRepository();
             IRepository<OrderDetail> oDR = new GenericRepository<OrderDetail>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
-            List<Orders> orders = oR.Get();
+            List<Orders> orders = _orderRepository.Get();
             Orders? order = orders.Where(x => x.Id == id).FirstOrDefault();
             order.OrderDetails = oDR.Get().Where(x => x.OrderId == id).ToList();
-            ProductRepository pR = new ProductRepository();
             foreach (var item in order.OrderDetails)
             {
-                item.Product = pR.Get(item.ProductId);
+                item.Product = _productRepository.Get(item.ProductId);
             }
             return View(order);
         }
@@ -128,11 +133,10 @@ namespace Ecommerce.Controllers
 
         public IActionResult OrderStatusUpdate(int id, string status)
         {
-            OrderRepository oR = new OrderRepository();
-            var orders = oR.Get();
+            var orders = _orderRepository.Get();
             Orders? order = orders.Where(x => x.Id == id).FirstOrDefault();
             order.Status = status;
-            oR.UpdateStatus(order);
+            _orderRepository.UpdateStatus(order);
             return RedirectToAction("OrderDetails", "Order", new { id = id });
         }
 
@@ -154,8 +158,7 @@ namespace Ecommerce.Controllers
         [Authorize(Policy = "AdminPolicy")]
         public IActionResult ViewOrder(string statusFilter, DateTime? startDate, DateTime? endDate, string customerName, string ordernumber, int? id)
         {
-            OrderRepository oR = new OrderRepository();
-            var orders = oR.Get();
+            var orders = _orderRepository.Get();
             var status = orders.Select(o => o.Status).Distinct().ToList();
             ViewBag.StatusOptions = status;
 
@@ -184,15 +187,13 @@ namespace Ecommerce.Controllers
 
             if (id.HasValue)
             {
-                IRepository<OrderDetail> oDR = new GenericRepository<OrderDetail>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
-                ProductRepository pR = new ProductRepository();
                 var order = orders.FirstOrDefault(x => x.Id == id.Value);
                 if (order != null)
                 {
-                    order.OrderDetails = oDR.Get().Where(x => x.OrderId == id.Value).ToList();
+                    order.OrderDetails = _orderDetailRepository.Get().Where(x => x.OrderId == id.Value).ToList();
                     foreach (var detail in order.OrderDetails)
                     {
-                        detail.Product = pR.Get(detail.ProductId);
+                        detail.Product = _productRepository.Get(detail.ProductId);
                     }
                     order.User = _userManager.FindByIdAsync(order.UserId).Result;
                     ViewBag.Order = order;

@@ -3,16 +3,17 @@ using Microsoft.Data.SqlClient;
 
 namespace Ecommerce.Models
 {
-    public class CategoryRepository : GenericRepository<Category>
+    public class CategoryRepository : GenericRepository<Category>, ICategoryRepository
     {
-        private readonly string connectionString = @"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True";
-        public CategoryRepository() : base(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True")
+        private readonly string _connectionString;
+        public CategoryRepository(string connString) : base(connString)
         {
+            _connectionString = connString;
         }
 
         public List<Category> GetNames()
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = "SELECT Id, CategoryName, CategoryDescription, ImgPath, CreatedOn FROM Category";
                 var names = connection.Query<Category>(query).ToList();
@@ -35,7 +36,7 @@ namespace Ecommerce.Models
                           LEFT JOIN 
                             Category pc ON c.ParentCategoryID = pc.Id";
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 var parents = connection.Query<Category>(query).ToList();
                 return parents;
@@ -46,7 +47,7 @@ namespace Ecommerce.Models
         {
             var query = @"SELECT * FROM Category WHERE ParentCategoryID is NULL";
 
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 var subCategories = connection.Query<Category>(query).ToList();
@@ -71,7 +72,7 @@ namespace Ecommerce.Models
                   WHERE 
                     c.ParentCategoryID = @ParentCategoryID";
 
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 var subCategories = connection.Query<Category>(query, new { ParentCategoryID = parentCategoryId }).ToList();
@@ -94,7 +95,7 @@ namespace Ecommerce.Models
 
             var nonParentCategories = new List<Category>();
 
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 using (var cmd = new SqlCommand(query, connection))
@@ -128,7 +129,7 @@ namespace Ecommerce.Models
                         FROM Category c LEFT JOIN Category pc ON c.ParentCategoryID = pc.Id
                         WHERE c.Id = @Id";
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 var category = connection.QuerySingleOrDefault<Category>(query, new { Id = id });
                 return category?? new Category();
@@ -141,7 +142,7 @@ namespace Ecommerce.Models
         //public List<Category> GetParentCategory()
         //{
         //    // get catergories where parent category is not get parent category id and name also
-        //    using (var connection = new SqlConnection(connectionString))
+        //    using (var connection = new SqlConnection(_connectionString))
         //    {
         //        connection.Open();
         //        var command = connection.CreateCommand();
@@ -160,12 +161,12 @@ namespace Ecommerce.Models
         //    }
         //}
 
-        public new List<Category> Search(string search)
+        public override List<Category> Search(string search)
         {
             string query = @"SELECT Id,CategoryName,CategoryDescription,ImgPath,CreatedOn 
                           FROM Category WHERE CategoryName LIKE @search";
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 var categories = connection.Query<Category>(query, new { search = "%" + search + "%" }).ToList();
                 return categories;

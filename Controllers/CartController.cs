@@ -10,11 +10,13 @@ namespace Ecommerce.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IProductRepository _productRepository;
 
-        public CartController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public CartController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IProductRepository productRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _productRepository = productRepository;
         }
 
         [Authorize]
@@ -39,8 +41,7 @@ namespace Ecommerce.Controllers
         [Authorize]
         public IActionResult AddToCart(Product p, int id)
         {
-            ProductRepository pR = new ProductRepository();
-            Product product = pR.Get(id);
+            Product product = _productRepository.Get(id);
             var user = _userManager.GetUserAsync(User).Result;
             if (user != null)
             {

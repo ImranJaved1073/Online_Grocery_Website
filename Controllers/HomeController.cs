@@ -8,19 +8,22 @@ namespace Ecommerce.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IProductRepository _productRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public HomeController(ILogger<HomeController> logger)
+
+        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository, ICategoryRepository categoryRepository)
         {
             _logger = logger;
+            _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
         }
 
         public IActionResult Index()
         {
-            CategoryRepository _categoryRepository = new CategoryRepository();
             List<Category> nonparents = _categoryRepository.GetNonParentCategories();
             List<Product> products = new List<Product>();
-            IRepository<Product> productRepository = new GenericRepository<Product>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
-            products = productRepository.Get().ToList();
+            products = _productRepository.Get().ToList();
             //getting top 10 products in last 7 days 
             products = products.OrderByDescending(p => p.CreatedAt > DateTime.Now.AddDays(-7)).Take(10).ToList();
             ViewBag.Products = products;
@@ -29,7 +32,6 @@ namespace Ecommerce.Controllers
 
         public IActionResult ShopItems(int? id,int pageNumber,int pageSize,string view)
         {
-            CategoryRepository _categoryRepository = new CategoryRepository();
             List<Category> parents = _categoryRepository.GetCategoriesWithSubCategories();
             List<SubCategoryViewModel> subCategoryViewModels = new List<SubCategoryViewModel>();
             List<Product> products = new List<Product>();
@@ -37,23 +39,21 @@ namespace Ecommerce.Controllers
             {
                 SubCategoryViewModel subCategory = new SubCategoryViewModel();
                 subCategory.Category = category;
-                subCategory.GetSubCategories(category.Id);
+                subCategory.SubCategories = _categoryRepository.GetSubCategories(category.Id);
+                subCategory.Products = _productRepository.GetProductsByCategory(category.Id);
                 subCategoryViewModels.Add(subCategory);
             }
 
             if (id != null)
             {
-                ProductRepository _productRepository = new ProductRepository();
                 products = _productRepository.GetProductsByCategory((int)id);
-                IRepository<Category> rep = new GenericRepository<Category>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
-                string name = rep.Get((int)id).CategoryName;
+                string name = _categoryRepository.Get((int)id).CategoryName;
                 if (name != null)
                     TempData["CategoryName"] = name;
             }
             else
             {
-                IRepository<Product> productRepository = new GenericRepository<Product>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
-                products = productRepository.Get().ToList();
+                products = _productRepository.Get().ToList();
             }
             ViewBag.Categories = subCategoryViewModels;
 
@@ -83,8 +83,7 @@ namespace Ecommerce.Controllers
             //subCategory.GetSubCategories(categoryId);
             //subCategory.GetProducts(categoryId);
             //return View(subCategory);
-            ProductRepository pr = new ProductRepository();
-            Product product = pr.Get(id);
+            Product product = _productRepository.Get(id);
             return View(product);
         }
 

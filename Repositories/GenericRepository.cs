@@ -178,7 +178,7 @@ namespace Ecommerce.Models
                     return entity;
                 }
             }
-            return default;
+            return default!;
         }
 
         //public List<TEntity> Get()
@@ -224,7 +224,7 @@ namespace Ecommerce.Models
         //    }
         //}
 
-        public List<TEntity> Get()
+        virtual public List<TEntity> Get()
         {
             var tableName = typeof(TEntity).Name;
             var properties = typeof(TEntity).GetProperties()

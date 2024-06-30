@@ -3,17 +3,18 @@ using NuGet.Protocol;
 
 namespace Ecommerce.Models
 {
-    public class ProductRepository : GenericRepository<Product>
+    public class ProductRepository : GenericRepository<Product>, IProductRepository
     {
-        private readonly string connString = @"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True";
+        private readonly string _connString;
 
-        public ProductRepository() : base(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True")
+        public ProductRepository(string connString) : base(connString)
         {
+            _connString = connString;
         }
 
         public override List<Product> Search(string search)
         {
-            using (SqlConnection conn = new SqlConnection(connString))
+            using (SqlConnection conn = new SqlConnection(_connString))
             {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM Product WHERE Name LIKE @search", conn))
@@ -47,7 +48,7 @@ namespace Ecommerce.Models
 
         public Product GetProduct(string name, int categoryID, int brandID)
         {
-            using (SqlConnection conn = new SqlConnection(connString))
+            using (SqlConnection conn = new SqlConnection(_connString))
             {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM Product WHERE Name = @name AND CategoryID = @categoryID AND BrandID = @brandID", conn))
@@ -82,7 +83,7 @@ namespace Ecommerce.Models
 
         public List<Product> GetProductsByCategory(int categoryID)
         {
-            using (SqlConnection conn = new SqlConnection(connString))
+            using (SqlConnection conn = new SqlConnection(_connString))
             {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM Product WHERE CategoryID = @categoryID", conn))

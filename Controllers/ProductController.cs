@@ -14,35 +14,41 @@ namespace Ecommerce.Controllers
     public class ProductController : Controller
     {
         private readonly IWebHostEnvironment _env;
+        private readonly IProductRepository _productRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IRepository<Brand> _brandRepository;
+        private readonly IRepository<Unit> _unitRepository;
 
-        public ProductController(IWebHostEnvironment env)
+        public ProductController(
+            IWebHostEnvironment env,
+            IProductRepository productRepository,
+            ICategoryRepository categoryRepository,
+            IRepository<Brand> brandRepository,
+            IRepository<Unit> unitRepository)
         {
             _env = env;
+            _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
+            _brandRepository = brandRepository;
+            _unitRepository = unitRepository;
         }
 
         public IActionResult ProductList(string search,int pageNumber)
         {
-            ProductRepository productsRepository = new ProductRepository();
-            CategoryRepository categoryRepository = new();
-            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
             List<Product> products = new();
-            Category category = new();
-            Brand brand = new();
             if (!string.IsNullOrEmpty(search))
             {
-                products = productsRepository.Search(search).ToList();
+                products = _productRepository.Search(search).ToList();
             }
             else
             {
-                products = productsRepository.Get().ToList();
+                products = _productRepository.Get().ToList();
             }
 
             foreach (var product in products)
             {
-                category = categoryRepository.Get(product.CategoryID);
-                brand = brandRepository.Get(product.BrandID);
-                product.CategoryName = category.CategoryName;
-                product.BrandName = brand.BrandName;
+                product.CategoryName = _categoryRepository.Get(product.CategoryID).CategoryName;
+                product.BrandName = _brandRepository.Get(product.BrandID).BrandName;
             }
 
             const int pageSize = 5;
@@ -62,9 +68,7 @@ namespace Ecommerce.Controllers
 
         public IActionResult Details(int id)
         {
-
-            ProductRepository productRepository = new ProductRepository();
-            Product? product = productRepository.Get(id);
+            Product? product = _productRepository.Get(id);
 
             // Check if the product exists
             if (product == null)
@@ -74,13 +78,9 @@ namespace Ecommerce.Controllers
                 return RedirectToAction("ProductList", "Product");
             }
 
-            CategoryRepository categoryRepository = new CategoryRepository();
-            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
-            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
-
-            product.CategoryName = categoryRepository.Get(product.CategoryID).CategoryName;
-            product.BrandName = brandRepository.Get(product.BrandID).BrandName;
-            product.UnitName = unitRepository.Get(product.UnitID).Name;
+            product.CategoryName = _categoryRepository.Get(product.CategoryID).CategoryName;
+            product.BrandName = _brandRepository.Get(product.BrandID).BrandName;
+            product.UnitName = _unitRepository.Get(product.UnitID).Name;
 
             //showing error message if product already exists
             if (TempData["ProductExists"] != null)
@@ -98,8 +98,7 @@ namespace Ecommerce.Controllers
             AddProductViewModel addProduct = new AddProductViewModel();
             if (id != 0)
             {
-                ProductRepository productRepository = new ProductRepository();
-                Product product = productRepository.Get(id);
+                Product product = _productRepository.Get(id);
 
                 // Check if the product exists
                 if (product == null)
@@ -111,14 +110,9 @@ namespace Ecommerce.Controllers
                 addProduct.Product = product;
             }
 
-            CategoryRepository categoryRepository = new CategoryRepository();
-            List<Category> categories = categoryRepository.GetNonParentCategories().ToList();
-
-            IRepository<Brand> brandRepository = new GenericRepository<Brand>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
-            List<Brand> brands = brandRepository.Get().ToList();
-
-            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
-            List<Unit> units = unitRepository.Get().ToList();
+            List<Category> categories = _categoryRepository.GetNonParentCategories().ToList();
+            List<Brand> brands = _brandRepository.Get().ToList();
+            List<Unit> units = _unitRepository.Get().ToList();
 
             addProduct.Categories = new SelectList(categories, "Id", "CategoryName");
             addProduct.Brands = new SelectList(brands, "Id", "BrandName");
@@ -149,17 +143,13 @@ namespace Ecommerce.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Update the product
-                ProductRepository productRepository = new ProductRepository();
-
-                // Update product image if a new one is uploaded
                 if (p.Product.Picture != null)
                 {
                     p.Product.ImagePath = GetPath(p.Product.Picture);
                 }
 
                 // Save changes to the repository
-                productRepository.Update(p.Product);
+                _productRepository.Update(p.Product);
 
                 return RedirectToAction("ProductList", "Product");
             }
@@ -174,8 +164,7 @@ namespace Ecommerce.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            ProductRepository productRepository = new ProductRepository();
-            Product? product = productRepository.Get(id);
+            Product? product = _productRepository.Get(id);
 
             // Check if the product exists
             if (product == null)
@@ -185,7 +174,7 @@ namespace Ecommerce.Controllers
                 return RedirectToAction("ProductList", "Product");
             }
 
-            productRepository.Delete(id);
+            _productRepository.Delete(id);
             return RedirectToAction("ProductList", "Product");
         }
 
@@ -226,8 +215,7 @@ namespace Ecommerce.Controllers
 
                 if (model.Product != null)
                 {
-                    ProductRepository productRepository = new ProductRepository();
-                    product = productRepository.GetProduct(model.Product.Name, model.Product.CategoryID, model.Product.BrandID);
+                    product = _productRepository.GetProduct(model.Product.Name, model.Product.CategoryID, model.Product.BrandID);
 
                     if (product.Id == 0)
                     {
@@ -236,7 +224,7 @@ namespace Ecommerce.Controllers
                         product.CreatedAt = string.IsNullOrEmpty(model.Product.CreatedAt.ToString()) ? DateTime.Now : model.Product.CreatedAt;
                         product.UpdatedAt = string.IsNullOrEmpty(model.Product.UpdatedAt.ToString()) ? DateTime.Now : model.Product.UpdatedAt;
                         product.ImagePath = GetPath(model.Product.Picture);
-                        productRepository.Add(product);
+                        _productRepository.Add(product);
 
                         // Retrieve the product's ID after adding
                         //product.Id = productRepository.GetProduct(model.Product.Name, model.Product.CategoryID, model.Product.BrandID).Id;
@@ -256,17 +244,6 @@ namespace Ecommerce.Controllers
             }
 
             return RedirectToAction("ProductList", "Product");
-
-            
-
-            //p.CreatedAt = DateTime.Now;
-            //p.ImageUrl = GetPath(picture);
-            //p.ImageName = picture.FileName;
-
-            //ProductRepository productRepository = new ProductRepository();
-            //productRepository.Add(p);
-
-            //return RedirectToAction("ProductList", "Product");
         }
     }
 }

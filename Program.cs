@@ -1,4 +1,5 @@
 using Ecommerce.Data;
+using Ecommerce.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -23,6 +24,21 @@ builder.Services.AddAuthorization(options =>
 //builder.Services.AddAuthorizationBuilder()
 //    .AddPolicy("AdminPolicy", policy =>
 //    policy.RequireClaim(ClaimTypes.Email, "abcd@gmail.com"));
+
+
+
+builder.Services.AddScoped<IProductRepository,ProductRepository>(provider =>
+    new ProductRepository(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True"));
+builder.Services.AddScoped<ICategoryRepository,CategoryRepository>(provider =>
+    new CategoryRepository(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True"));
+builder.Services.AddScoped<IOrderRepository,OrderRepository>(provider =>
+    new OrderRepository(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True"));
+builder.Services.AddScoped<IRepository<OrderDetail>>(provider => new GenericRepository<OrderDetail>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True"));
+builder.Services.AddScoped<IRepository<Brand>, GenericRepository<Brand>>(provider => new GenericRepository<Brand>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True"));
+builder.Services.AddScoped<IRepository<Unit>>(provider => new GenericRepository<Unit>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True"));
+
+
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 

@@ -5,16 +5,25 @@ namespace Ecommerce.Controllers
 {
     public class CategoriesViewComponent:ViewComponent
     {
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IProductRepository _productRepository;
+
+        public CategoriesViewComponent(ICategoryRepository categoryRepository, IProductRepository productRepository)
+        {
+            _categoryRepository = categoryRepository;
+            _productRepository = productRepository;
+        }
+
         public IViewComponentResult Invoke()
         {
-            CategoryRepository _categoryRepository = new CategoryRepository();
             List<Category> parents = _categoryRepository.GetCategoriesWithSubCategories();
             List<SubCategoryViewModel> subCategoryViewModels = new List<SubCategoryViewModel>();
             foreach (Category category in parents)
             {
                 SubCategoryViewModel subCategory = new SubCategoryViewModel();
                 subCategory.Category = category;
-                subCategory.GetSubCategories(category.Id);
+                subCategory.SubCategories = _categoryRepository.GetSubCategories(category.Id);
+                subCategory.Products = _productRepository.GetProductsByCategory(category.Id);
                 subCategoryViewModels.Add(subCategory);
             }
             return View(subCategoryViewModels);
