@@ -23,8 +23,8 @@ The eGrocery website is a robust online platform that allows users to browse, se
 
 To run Egrocery locally, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/imranjaved1073/EGrocery.git`
-2. Navigate to the project directory: `cd EGrocery`
+1. Clone the repository: `git clone https://github.com/imranjaved1073/Online_Grocery_Website.git`
+2. Navigate to the project directory: `cd Online_Grocery_Website`
 3. Install dependencies: `dotnet restore`
 4. Run the application: `dotnet run`
 
