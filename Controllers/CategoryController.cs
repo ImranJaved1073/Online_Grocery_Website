@@ -59,7 +59,12 @@ namespace Ecommerce.Controllers
         {
             List<Category> categories = _categoryRepository.GetNames().ToList();
             ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
-            return View(_categoryRepository.Get(id));
+            if (id > 0)
+            {
+                return View(_categoryRepository.Get(id));
+            }
+            return View();
+
         }
 
         [HttpPost]

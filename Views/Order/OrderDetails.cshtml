@@ -64,17 +64,17 @@
                                 <div class="row align-items-center">
                                     <div class="col-4 col-md-3 col-xl-2">
                                         <!-- Image -->
-                                        <a href="product.html"><img src="~/@item.Product.ImagePath" alt="..." class="img-fluid"></a>
+                                        <a href="product.html"><img src="~/@item.Product?.ImagePath" alt="..." class="img-fluid"></a>
                                     </div>
                                     <div class="col">
                                         <!-- Title -->
                                         <p class="mb-4 fs-sm fw-bold">
-                                            <a class="text-body" href="product.html">@item.Product.Name</a> <br>
+                                            <a class="text-body" href="product.html">@item.Product?.Name</a> <br>
                                             <span class="text-muted">@item.Price.ToString("C")</span>
                                         </p>
                                         <!-- Text -->
                                         <div class="fs-sm text-muted">
-                                            Weight: @item.Product.Weight@item.Product.GetUnitName(item.Product.UnitID) <br>
+                                            Weight: @item.Product?.Weight@item.Product?.GetUnitName(item.Product.UnitID) <br>
                                         </div>
                                     </div>
                                 </div>
@@ -122,22 +122,22 @@
                         <div class="col-12 col-md-6">
                             <!-- Heading -->
                             <p class="fw-bold">Billing Address:</p>
-                            <p class="text-gray-500">@Model.CheckOut.Address</p>
+                            <p class="text-gray-500">@Model.CheckOut?.Address</p>
                         </div>
                         <div class="col-12 col-md-6">
                             <!-- Heading -->
                             <p class="fw-bold">Shipping Address:</p>
-                            <p class="text-gray-500">@Model.CheckOut.Address</p>
+                            <p class="text-gray-500">@Model.CheckOut?.Address</p>
                         </div>
                         <div class="col-12 col-md-6">
                             <!-- Heading -->
                             <p class="fw-bold">Shipping Method:</p>
-                            <p class="text-gray-500">@Model.CheckOut.PaymentMethod</p>
+                            <p class="text-gray-500">@Model.CheckOut?.PaymentMethod</p>
                         </div>
                         <div class="col-12 col-md-6">
                             <!-- Heading -->
                             <p class="fw-bold">Payment Method:</p>
-                            <p class="text-gray-500">@Model.CheckOut.PaymentMethod</p>
+                            <p class="text-gray-500">@Model.CheckOut?.PaymentMethod</p>
                         </div>
                     </div>
                 </div>
@@ -146,3 +146,9 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/simplebar/dist/simplebar.min.js"></script>
+    <script src="~/js/theme.min.js"></script>
+}

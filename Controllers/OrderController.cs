@@ -92,7 +92,7 @@ namespace Ecommerce.Controllers
             var orders = _orderRepository.Get();
             var status = orders.Select(o => o.Status).Distinct().ToList();
             ViewBag.StatusOptions = status;
-            orders = orders.Where(x => x.UserId == user.Id).ToList();
+            orders = orders.Where(x => x.UserId == user?.Id).ToList();
             if (!string.IsNullOrEmpty(statusFilter))
             {
                 orders = orders.Where(x => x.Status == statusFilter).ToList();
@@ -111,10 +111,13 @@ namespace Ecommerce.Controllers
 
         public IActionResult OrderDetails(int id)
         {
-            IRepository<OrderDetail> oDR = new GenericRepository<OrderDetail>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
             List<Orders> orders = _orderRepository.Get();
-            Orders? order = orders.Where(x => x.Id == id).FirstOrDefault();
-            order.OrderDetails = oDR.Get().Where(x => x.OrderId == id).ToList();
+            var order = orders.Where(x => x.Id == id).FirstOrDefault();
+            if (order == null)
+            { 
+               return NotFound();
+            }
+            order.OrderDetails = _orderDetailRepository.Get().Where(x => x.OrderId == id).ToList();
             foreach (var item in order.OrderDetails)
             {
                 item.Product = _productRepository.Get(item.ProductId);
@@ -135,6 +138,10 @@ namespace Ecommerce.Controllers
         {
             var orders = _orderRepository.Get();
             Orders? order = orders.Where(x => x.Id == id).FirstOrDefault();
+            if (order == null)
+            {
+                return NotFound();
+            }
             order.Status = status;
             _orderRepository.UpdateStatus(order);
             return RedirectToAction("OrderDetails", "Order", new { id = id });
@@ -182,7 +189,10 @@ namespace Ecommerce.Controllers
 
             foreach (var item in orders)
             {
-                item.User = _userManager.FindByIdAsync(item.UserId).Result;
+                if (item.UserId != null)
+                {
+                    item.User = _userManager.FindByIdAsync(item.UserId).Result;
+                }
             }
 
             if (id.HasValue)
@@ -195,7 +205,10 @@ namespace Ecommerce.Controllers
                     {
                         detail.Product = _productRepository.Get(detail.ProductId);
                     }
-                    order.User = _userManager.FindByIdAsync(order.UserId).Result;
+                    if (order.UserId != null)
+                    {
+                        order.User = _userManager.FindByIdAsync(order.UserId).Result;
+                    }
                     ViewBag.Order = order;
                 }
             }
