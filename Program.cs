@@ -27,7 +27,7 @@ builder.Services.AddAuthorization(options =>
 
 
 
-builder.Services.AddScoped<IProductRepository,ProductRepository>(provider =>
+builder.Services.AddTransient<IProductRepository,ProductRepository>(provider =>
     new ProductRepository(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True"));
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>(provider =>
     new CategoryRepository(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True"));

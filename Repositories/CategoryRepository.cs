@@ -93,32 +93,12 @@ namespace Ecommerce.Models
                 WHERE 
                     c.Id NOT IN (SELECT DISTINCT ParentCategoryID FROM Category WHERE ParentCategoryID IS NOT NULL)";
 
-            var nonParentCategories = new List<Category>();
-
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                using (var cmd = new SqlCommand(query, connection))
-                {
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Category c = new Category
-                            {
-                                Id = reader.GetInt32(0),
-                                CategoryName = reader.GetString(1),
-                                CategoryDescription = reader.IsDBNull(2) ? DBNull.Value.ToString() : reader.GetString(2),
-                                ImgPath = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                CreatedOn = reader.GetDateTime(4)
-                            };
-                            nonParentCategories.Add(c);
-                        }
-                    }
-                }
+                var nonParentCategories = connection.Query<Category>(query).AsList();
+                return nonParentCategories;
             }
-
-            return nonParentCategories;
         }
 
 

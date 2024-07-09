@@ -6,7 +6,7 @@ namespace Ecommerce.Models
 {
     public class AddProductViewModel
     {
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
         public IEnumerable<SelectListItem>? Categories { get; set; }
 
         public IEnumerable<SelectListItem>? Brands { get; set; }

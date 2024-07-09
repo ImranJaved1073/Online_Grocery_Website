@@ -17,7 +17,7 @@ namespace Ecommerce.Models
             {
                 string query = "SELECT * FROM Orders WHERE OrderNum = @OrderNum";
                 var order = connection.QueryFirstOrDefault<Orders>(query, new { OrderNum = orderno });
-                return order;
+                return order!;
             }
         }
 
