@@ -143,13 +143,13 @@ namespace Ecommerce.Controllers
         {
             if (!ModelState.IsValid)
             {
-                if (p.Product.Picture != null)
+                if (p.Product?.Picture != null)
                 {
                     p.Product.ImagePath = GetPath(p.Product.Picture);
                 }
 
                 // Save changes to the repository
-                _productRepository.Update(p.Product);
+                _productRepository.Update(p.Product!);
 
                 return RedirectToAction("ProductList", "Product");
             }
@@ -207,15 +207,15 @@ namespace Ecommerce.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddProduct(AddProductViewModel model)
+        public IActionResult AddProduct(AddProductViewModel? model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 Product product = new();
 
-                if (model.Product != null)
+                if (model?.Product != null)
                 {
-                    product = _productRepository.GetProduct(model.Product.Name, model.Product.CategoryID, model.Product.BrandID);
+                    product = _productRepository.GetProduct(model.Product.Name!, model.Product.CategoryID, model.Product.BrandID);
 
                     if (product.Id == 0)
                     {
@@ -223,7 +223,7 @@ namespace Ecommerce.Controllers
                         product = model.Product;
                         product.CreatedAt = string.IsNullOrEmpty(model.Product.CreatedAt.ToString()) ? DateTime.Now : model.Product.CreatedAt;
                         product.UpdatedAt = string.IsNullOrEmpty(model.Product.UpdatedAt.ToString()) ? DateTime.Now : model.Product.UpdatedAt;
-                        product.ImagePath = GetPath(model.Product.Picture);
+                        product.ImagePath = GetPath(model.Product.Picture!);
                         _productRepository.Add(product);
 
                         // Retrieve the product's ID after adding

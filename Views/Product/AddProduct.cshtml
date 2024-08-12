@@ -113,10 +113,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
-            <form method="post" asp-action="@(Model.Product == null ? "AddProduct" : "Edit")" enctype="multipart/form-data">
+            <form id="productForm" method="post" asp-action="@(Model.Product == null ? "AddProduct" : "Edit")" enctype="multipart/form-data">
                 @if (Model.Product != null)
                 {
-                    <input type="hidden" asp-for="Product.Id" />
+                    <input type="hidden" asp-for="Product!.Id" />
                 }
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
@@ -129,8 +129,8 @@
                                 <div class="row">
                                     <!-- input -->
                                     <div class="col-lg-12 mb-3">
-                                        <label asp-for="Product.Name" class="form-label">Name</label>
-                                        <textarea asp-for="Product.Name" type="text" class="form-control" rows="2" placeholder="Enter Product MeaningFul Name here" required></textarea>
+                                        <label asp-for="Product!.Name" class="form-label">Name</label>
+                                        <textarea asp-for="Product!.Name" type="text" class="form-control" rows="2" placeholder="Enter Product MeaningFul Name here" required></textarea>
                                         <div class="invalid-feedback">Please enter a title.</div>
                                     </div>
                                     <div class="col-lg-6 mb-3">
@@ -156,9 +156,9 @@
 
                                     <!-- input -->
                                     <div class="col-lg-6 mb-3">
-                                        <label asp-for="Product.Quantity" class="form-label">Quantity</label>
-                                        <input asp-for="Product.Quantity" type="text" class="form-control" placeholder="Quantity" required>
-                                        <span asp-validation-for="Product.Quantity" class="text-danger"></span>
+                                        <label asp-for="Product!.Quantity" class="form-label">Quantity</label>
+                                        <input asp-for="Product!.Quantity" type="text" class="form-control" placeholder="Quantity" required>
+                                        <span asp-validation-for="Product!.Quantity" class="text-danger"></span>
                                     </div>
                                     <div class="col-lg-6 mb-3">
                                         <label asp-for="Product.CategoryID" class="form-label">Category</label>
@@ -222,10 +222,12 @@
                                     <div class="mb-3">
                                         <label asp-for="Product.UpdatedAt" class="form-label">Select Date</label>
                                         <input asp-for="Product.UpdatedAt" type="datetime-local" class="form-control">
+                                        <span asp-validation-for="Product.UpdatedAt" class="text-danger"></span>
                                     </div>
                                     <div class="mb-3 ">
                                         <label asp-for="Product.CreatedAt" class="form-label" readonly>Created Date</label>
                                         <input asp-for="Product.CreatedAt" type="datetime-local" class="form-control" readonly>
+                                        <span asp-validation-for="Product.CreatedAt" class="text-danger"></span>
                                     </div>
                                 }
                                 else
@@ -233,6 +235,7 @@
                                     <div class="mb-3">
                                         <label asp-for="Product.CreatedAt" class="form-label">Select Date</label>
                                         <input asp-for="Product.CreatedAt" type="datetime-local" class="form-control">
+                                        <span asp-validation-for="Product.CreatedAt" class="text-danger"></span>
                                     </div>
                                 }
 
@@ -249,11 +252,13 @@
                                 <div class="mb-3">
                                     <label asp-for="Product.Price" class="form-label">Regular Price</label>
                                     <input asp-for="Product.Price" type="text" class="form-control" placeholder="Rs.0.00">
+                                    <span asp-validation-for="Product.Price" class="text-danger"></span>
                                 </div>
                                 <!-- input -->
                                 <div class="mb-3">
                                     <label asp-for="Product.SalePrice" class="form-label">Sale Price</label>
                                     <input asp-for="Product.SalePrice" type="text" class="form-control" placeholder="Rs.0.00" required>
+                                    <span asp-validation-for="Product.SalePrice" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -261,11 +266,11 @@
                         <div class="d-grid">
                             @if (Model.Product != null)
                             {
-                                <button type="submit" class="btn btn-primary">Update Product</button>
+                                <button type="submit" class="btn btn-primary" id="submitButton">Update Product</button>
                             }
                             else
                             {
-                                <button type="submit" class="btn btn-primary">Create Product</button>
+                                <button type="submit" class="btn btn-primary" id="submitButton">Create Product</button>
                             }
                         </div>
                     </div>
@@ -288,6 +293,34 @@
         <script src="~/js/vendors/chart.js"></script>
         <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
         <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+        <script src="~/js/site.js"></script>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                $('#productForm').on('submit', function (event) {
+                    event.preventDefault();
+
+                    var formData = new FormData(this);
+
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            // Handle success response (e.g., redirect to product list or show a success message)
+                            alert('Product has been saved successfully!');
+                        },
+                        error: function (error) {
+                            // Handle error response (e.g., show error messages)
+                            alert('An error occurred while saving the product. Please try again.');
+                        }
+                    });
+                });
+            });
+        </script>
     }
 
 

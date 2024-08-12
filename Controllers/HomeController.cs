@@ -87,6 +87,11 @@ namespace Ecommerce.Controllers
             return View(product);
         }
 
+        public IActionResult Load(string x)
+        {
+            return PartialView("_ProductsList", _productRepository.Search(x).ToList());
+        }
+
         public IActionResult About()
         {
             return View();

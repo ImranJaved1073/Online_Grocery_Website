@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Ecommerce.Models.Attributes;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Ecommerce.Models
 {
@@ -12,8 +14,7 @@ namespace Ecommerce.Models
         public int Id { get; set; }
 
         [Required]
-        [Column(TypeName = "Nvarchar(100)")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [ForeignKey("Category")]
         public int CategoryID { get; set; }
@@ -25,10 +26,9 @@ namespace Ecommerce.Models
         public int UnitID { get; set; }
 
         [Required]
-        [Column(TypeName = "Nvarchar(max)")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        public string ProductCode { get; set; }
+        public string? ProductCode { get; set; }
 
         public decimal Weight { get; set; }
 
@@ -43,27 +43,28 @@ namespace Ecommerce.Models
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         [Required]
+        [Weight_Price()]
         public int Quantity { get; set; }
 
         [NotMapped]
-        public IFormFile Picture { get; set; }
+        public IFormFile? Picture { get; set; }
 
-        public string ImagePath { get; set; }
-
-        [NotMapped]
-        public string  CategoryName { get; set; }
+        public string? ImagePath { get; set; }
 
         [NotMapped]
-        public string BrandName { get; set; }
+        public string?  CategoryName { get; set; }
 
         [NotMapped]
-        public string UnitName { get; set; }
+        public string? BrandName { get; set; }
+
+        [NotMapped]
+        public string? UnitName { get; set; }
 
         public string GetUnitName(int id)
         {
-            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=(localdb)\ProjectModels;Initial Catalog=GroceryDb;Integrated Security=True;Trust Server Certificate=True");
+            IRepository<Unit> unitRepository = new GenericRepository<Unit>(@"Data Source=DESKTOP-EQ55Q8H\SQLEXPRESS;Initial Catalog=GroceryDb;Integrated Security=True;Persist Security Info=False;Pooling=False;Multiple Active Result Sets=False;Encrypt=False;Trust Server Certificate=True;Command Timeout=0");
             UnitName = unitRepository.Get(id).Name;
-            return UnitName;
+            return UnitName!;
         }
     }
 

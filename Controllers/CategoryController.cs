@@ -120,5 +120,33 @@ namespace Ecommerce.Controllers
             _categoryRepository.Update(c);
             return RedirectToAction("List", "Category");
         }
+
+        [HttpPost]
+        public  IActionResult CreateOrEdit(Category category)
+        {
+            if (ModelState.IsValid)
+            {
+                var files = HttpContext.Request.Form.Files;
+                if (category.Id == 0)
+                {
+                    if (files.Count > 0)
+                    {
+                        category.ImgPath = GetPath(files[0]);
+                    }
+                    _categoryRepository.Add(category);
+                }
+                else
+                {
+                    if (files.Count > 0)
+                    {
+                        category.ImgPath = GetPath(files[0]);
+                    }
+                    _categoryRepository.Update(category);
+                }
+            }
+            return Json (new {success = true, message = "Saved Successfully"});
+
+        }
+
     }
 }

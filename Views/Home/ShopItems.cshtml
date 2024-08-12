@@ -91,7 +91,7 @@
                                 {
                                     <p class="mb-0"><span class="text-dark">@Model.Count()</span> Products found </p>
                                 }
-                                else
+                                else if (Model.Count() == 1)
                                 {
                                     <p class="mb-0"><span class="text-dark">1</span> Product found </p>
                                 }
@@ -128,6 +128,15 @@
                                             <option value="Avg. Rating">Avg. Rating</option>
                                         </select>
                                     </div>
+
+                                    <div class="container">
+                                        <div class="input-group">
+                                            <input class="form-control" type="text" id="srchtxt" placeholder="Search Products" />
+                                            <input id="srchbtn" type="button" class="btn btn-primary" value="Search" />
+                                        </div>
+                                        
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -154,6 +163,8 @@
                             </div>
                         }
 
+                        <div id="shopitems">
+                        </div>
 
 
                         <!-- row -->
@@ -185,21 +196,40 @@
     <script src="~/lib/tiny-slider/dist/min/tiny-slider.js"></script>
     <script src="~/js/vendors/tns-slider.js"></script>
     <script src="~/js/vendors/zoom.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
     <script>
 
         function grid() {
             const listElement = document.getElementById('plist');
             const gridElement = document.getElementById('pgrid');
+            const searchResultsElement = document.getElementById('shopitems');
             listElement.classList.add('d-none');
             gridElement.classList.remove('d-none');
+            searchResultsElement.classList.add('d-none');
         }
 
         function list() {
             const listElement = document.getElementById('plist');
             const gridElement = document.getElementById('pgrid');
+            const searchResultsElement = document.getElementById('shopitems');
             listElement.classList.remove('d-none');
             gridElement.classList.add('d-none');
+            searchResultsElement.classList.add('d-none');
         }
+
+        $(document).ready(function () {
+            $('#srchbtn').click(function () {
+                var search = $('#srchtxt').val();
+                console.log("successful");
+                $.get('/Home/Load', { x: search }, function (result) {
+                    $('#plist').addClass('d-none');
+                    $('#pgrid').addClass('d-none');
+                    $('#shopitems').removeClass('d-none');
+                    $('#shopitems').html(result).fadeIn('slow');
+                });
+            });
+        });
 
     </script>
 }

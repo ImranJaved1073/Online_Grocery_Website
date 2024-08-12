@@ -87,7 +87,7 @@
                     </div>
                 </div>
             </div>
-            <form method="post" asp-action="@(Model == null ? "Create" : "Edit")" enctype="multipart/form-data">
+            <form id="categoryForm" method="post" asp-action="@(Model == null ? "Create" : "Edit")">
                 @if (Model != null)
                 {
                     <input type="hidden" asp-for="Id" />
@@ -135,17 +135,17 @@
                                 <label asp-for="CategoryImg" class="mb-3 h5">Category Image</label>
                                 <input asp-for="CategoryImg" class="form-control form-control-lg" id="formFileLg" type="file">
                                 <span asp-validation-for="CategoryImg" class="text-danger"></span>
-
                             </div>
+
                             <!-- input -->
                             <div class="d-grid mt-3">
-                                @if(Model != null)
+                                @if (Model != null)
                                 {
-                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <button type="button" id="updateBtn" class="btn btn-primary">Update</button>
                                 }
                                 else
                                 {
-                                    <button type="submit" class="btn btn-primary">Create</button>
+                                    <button type="button" id="createBtn" class="btn btn-primary">Create</button>
                                 }
                             </div>
                         </div>
@@ -174,6 +174,52 @@
 
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#createBtn, #updateBtn').click(function () {
+                var formData = new FormData();
+                var fileInput = $('#formFileLg')[0];
+                var otherData = $('#categoryForm').serializeArray();
+
+                if (fileInput.files.length > 0) {
+                    formData.append('CategoryImg', fileInput.files[0]);
+                }
+
+                $.each(otherData, function (key, input) {
+                    formData.append(input.name, input.value);
+                });
+
+                var actionUrl = $('#categoryForm').attr('action');
+
+                $.ajax({
+                    url: actionUrl,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            window.location.href = '@Url.Action("List", "Category")';
+                        } else {
+                            // Handle validation errors and display them
+                            var validationSummary = $('.text-danger');
+                            validationSummary.empty();
+                            $.each(response.errors, function (index, error) {
+                                validationSummary.append('<div>' + error + '</div>');
+                            });
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.error("Error uploading file: " + textStatus + ", " + errorThrown);
+                    }
+                });
+            });
+        });
+    </script>
+
 
 
 </body>
